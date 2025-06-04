@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create labyrinth</title>
+    <style>
+        table { border-collapse: collapse; }
+        th { user-select: none; }
+        td { width: 30px; height: 30px; text-align: center; border: 1px solid black; cursor: pointer; user-select: none; }
+        .wall { background-color: black; color: white; }
+        .path { background-color: #2196f3; color: white; }
+    </style>
+    <script>
+        function generateTable() {
+            document.getElementById("solution").innerText = "";
+            document.getElementById("hide-btn").style.display = "none";
+            document.getElementById("error").innerText = "";
+
+            const rows = parseInt(document.getElementById("rows").value);
+            const cols = parseInt(document.getElementById("cols").value);
+            const container = document.getElementById("labyrinth-container");
+
+            let matrix = [];
+            const oldTable = document.querySelector("#labyrinth-container table");
+            if (oldTable) {
+                const oldRows = oldTable.rows;
+
+                for (let i = 1; i < oldRows.length; i++) {
+                    let rowData = [];
+                    const cells = oldRows[i].cells;
+
+                    for (let j = 1; j < cells.length; j++) {
+                        rowData.push(cells[j].classList.contains("wall") ? 1 : 0);
+                    }
+
+                    matrix.push(rowData);
+                }
+            }
+
+            let newMatrix = [];
+            for (let i = 0; i < rows; i++) {
+                let row = [];
+                for (let j = 0; j < cols; j++) {
+                    row.push((matrix[i] && matrix[i][j]) ? 1 : 0);
+                }
+                newMatrix.push(row);
+            }
+
+            let html = "<table>";
+            html += "<tr><th></th>";
+            for (let j = 1; j <= cols; j++) {
+                html += `<th>${j}</th>`;
+            }
+            html += "</tr>";
+            for (let i = 0; i < rows; i++) {
+                html += `<tr><th>${i + 1}</th>`;
+                for (let j = 0; j < cols; j++) {
+                    const value = newMatrix[i][j];
+                    const className = value === 1 ? 'wall' : '';
+                    html += `<td class="${className}" onmouseover="toggleCell(this)"></td>`;
+                }
+                html += "</tr>";
+            }
+            html += "</table>";
+            container.innerHTML = html;
+
+            document.getElementById("start-row").max = rows;
+            document.getElementById("start-col").max = cols;
+            document.getElementById("end-row").max = rows;
+            document.getElementById("end-col").max = cols;
+
+            ["start-row", "end-row"].forEach(id => {
+                const el = document.getElementById(id);
+                if (parseInt(el.value) > rows) el.value = rows;
+            });
+            ["start-col", "end-col"].forEach(id => {
+                const el = document.getElementById(id);
+                if (parseInt(el.value) > cols) el.value = cols;
+            });
+        }
+
+        let isMouseDown = false;
+        let changeType = true;
+        document.addEventListener("mousedown", (e) => {
+            isMouseDown = true; changeType = !e.target.classList.contains("wall");
+            if (e.target.tagName === "TD") toggleCell(e.target);
+        });
+        document.addEventListener("mouseup", () => isMouseDown = false);
+
+        function toggleCell(cell) {
+            if (document.getElementById("hide-btn").style.display == "inline") return;
+
+            if (isMouseDown) {
+                if (cell.classList.contains("wall") && !changeType) {
+                    cell.classList.remove("wall");
+                } else if (!cell.classList.contains("wall") && changeType) {
+                    cell.classList.add("wall");
+                }
+            }
+        }
+
+        function resetTable() {
+            const table = document.querySelector("#labyrinth-container table");
+            table.querySelectorAll("td").forEach(cell => {
+                cell.classList.remove("wall");
+                cell.classList.remove("path");
+                cell.innerText = "";
+            });
+            document.getElementById("solution").innerText = "";
+            document.getElementById("hide-btn").style.display = "none";
+            return;
+        }
+
+        function paintPath(path) {
+            const table = document.querySelector("#labyrinth-container table");
+            path.forEach(([[i, j],s]) => {
+                const row = table.rows[i];
+                const cell = row.cells[j];
+                cell.classList.add("path");
+                cell.innerText = s;
+            });
+        }
+
+        function solveLabyrinth() {
+            const table = document.querySelector("#labyrinth-container table");
+            document.getElementById("error").innerText = "";
+
+            table.querySelectorAll("td").forEach(cell => {
+                cell.classList.remove("path");
+                cell.innerText = "";
+            });
+
+            let matrix = [];
+            let rows = document.querySelectorAll("#labyrinth-container table tr");
+
+            rows.forEach((row, i) => {
+                if (i === 0) return;
+                let r = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    r.push(cell.classList.contains("wall") ? 1 : 0);
+                });
+                matrix.push(r);
+            });
+
+
+            let start = [
+                parseInt(document.getElementById("start-row").value),
+                parseInt(document.getElementById("start-col").value)
+            ];
+            let end = [
+                parseInt(document.getElementById("end-row").value),
+                parseInt(document.getElementById("end-col").value)
+            ];
+            let algorithm = document.getElementById("algorithm").value;
+
+            fetch("/labyrinth/solve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    labyrinth: matrix, 
+                    start: start,
+                    end: end,
+                    algorithm: algorithm
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.path) {
+                    document.getElementById("solution").innerText = `Solution found! (${data.path.length-1} steps)`;
+                    paintPath(data.path);
+                    document.getElementById("hide-btn").style.display = "inline";
+                } else {
+                    document.getElementById("solution").innerText = "Solution not found";
+                }
+            });
+        }
+    
+        function hideSolution() {
+            const table = document.querySelector("#labyrinth-container table");
+            table.querySelectorAll("td").forEach(cell => {
+                cell.classList.remove("path");
+                cell.innerText = "";
+            });
+            document.getElementById("solution").innerText = "";
+            document.getElementById("hide-btn").style.display = "none";
+            return;
+        }
+
+        function createLabyrinth() {
+            let matrix = [];
+            let rows = document.querySelectorAll("#labyrinth-container table tr");
+
+            rows.forEach((row, i) => {
+                if (i === 0) return;
+                let r = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    r.push(cell.classList.contains("wall") ? 1 : 0);
+                });
+                matrix.push(r);
+            });
+
+            let start = [
+                parseInt(document.getElementById("start-row").value),
+                parseInt(document.getElementById("start-col").value)
+            ];
+            let end = [
+                parseInt(document.getElementById("end-row").value),
+                parseInt(document.getElementById("end-col").value)
+            ];
+
+            fetch("/labyrinth/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    labyrinth: matrix, 
+                    start: start,
+                    end: end,
+                    title: document.getElementById("title").value,
+                    description: document.getElementById("description").value
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    response.json().then(data => {
+                        document.getElementById("error").innerText = data.error;
+                    });
+                } else {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                }
+            })
+        }
+
+        window.onload = generateTable;
+    </script>
+</head>
+<body>
+    <h2>Introduce the labyrinth</h2>
+
+    <label for="rows">Rows:</label>
+    <input type="number" id="rows" min="5" max="25" value="10">
+    <label for="cols">Columns:</label>
+    <input type="number" id="cols" min="5" max="25" value="10">
+    <button onclick="generateTable()">Adjust dimensions</button>
+    <button onclick="resetTable()">Reset</button>
+
+    <p>Click the cells to change between path (white) and wall (black).</p>
+    
+    <div id="labyrinth-container"></div>
+
+    <p>
+        Start:
+        <input type="number" id="start-row" min="1" value="1">
+        <input type="number" id="start-col" min="1" value="1">
+        End:
+        <input type="number" id="end-row" min="1" value="10">
+        <input type="number" id="end-col" min="1" value="10">
+    </p>
+    <label for="algorithm">Algorithm:</label>
+    <select id="algorithm">
+        <option value="bfs">BFS</option>
+        <option value="dfs">DFS</option>
+        <option value="rw">Random</option>
+    </select>
+    <button onclick="solveLabyrinth()">Solve</button>
+    <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
+
+    <p id="solution"></p>
+
+    {% if current_user.is_authenticated %}
+        <p>
+            <input type="text" id="title" placeholder="Title" maxlength="50" size="52">
+            <button id="create-btn" onclick="createLabyrinth()">Create</button>
+        </p>
+        <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6"></textarea>
+    {% endif %}
+    <p id="error" style="color: red;"></p>
+
+</body>
+</html>
