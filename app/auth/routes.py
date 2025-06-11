@@ -13,12 +13,13 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        if not (3 <= len(username) <= 20) or not (8 <= len(password) <= 20):
+            return "Username or password doesn't meet the required length.", 400
 
         user = AuthService.register_user(username, password)
-        print(user)
         if user:
             return redirect(url_for('auth.login'))
-        return render_template("register.html", error="Username already taken")
+        return render_template("register.html", error="Username already taken"), 409
 
     return render_template('register.html')
 
@@ -36,7 +37,7 @@ def login():
         if user:
             login_user(user)
             return redirect(url_for('main.index'))
-        return render_template("login.html", error="Invalid credentials")
+        return render_template("login.html", error="Invalid credentials"), 401
 
     return render_template('login.html')
 
