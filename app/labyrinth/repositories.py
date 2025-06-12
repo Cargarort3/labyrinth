@@ -16,8 +16,6 @@ class LabyrinthRepository:
 
     def delete(id):
         labyrinth = Labyrinth.query.filter_by(id=id).first()
-        if labyrinth:
-            db.session.delete(labyrinth)
-            db.session.commit()
-            return True
-        return False
+        db.session.delete(labyrinth)
+        db.session.commit()
+        return True

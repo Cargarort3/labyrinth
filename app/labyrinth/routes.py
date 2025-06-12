@@ -45,9 +45,6 @@ def create_labyrinth():
 
         labyrinth = LabyrinthService.create_labyrinth(labyrinth)
 
-        if labyrinth is None:
-            return redirect(url_for('labyrinth.create_labyrinth'))
-
         return redirect(url_for('labyrinth.my_labyrinths'))
 
     return render_template('labyrinth_form.html')

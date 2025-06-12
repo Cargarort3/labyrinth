@@ -10,3 +10,10 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f"mariadb+mariadbconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.urandom(24)
+
+
+class TestingConfig:
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    WTF_CSRF_ENABLED = False
+    SECRET_KEY = "test-secret"
