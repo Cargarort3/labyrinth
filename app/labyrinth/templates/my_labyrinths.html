@@ -1,28 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Labyrinths</title>
+{% extends 'base.html' %}
 
-    <script>
-        function deleteLabyrinth(id) {
-            if (!confirm("Are you sure you want to delete this labyrinth?")) return;
+{% block title %}My Labyrinths{% endblock %}
 
-            fetch(`/labyrinth/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    location.reload();
-                }
-            })
-        }
-    </script>
-</head>
-<body>
+{% block content %}
     <h1>My Labyrinths</h1>
 
     {% if labyrinths %}
@@ -45,5 +25,24 @@
     {% else %}
         <p>No labyrinths found.</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function deleteLabyrinth(id) {
+        if (!confirm("Are you sure you want to delete this labyrinth?")) return;
+
+        fetch(`/labyrinth/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        })
+    }
+</script>
+{% endblock %}

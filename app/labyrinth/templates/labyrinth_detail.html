@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ labyrinth.title }}</title>
-    <style>
-        table { border-collapse: collapse; }
-        th { user-select: none; }
-        td { width: 30px; height: 30px; text-align: center; border: 1px solid black; user-select: none; }
-        .wall { background-color: black; }
-        .start { background-color: green; }
-        .end { background-color: red; }
-    </style>
-</head>
-<body>
-    <h2>{{ labyrinth.title  }} from {{ labyrinth.user.username  }}</h2>
+{% extends 'base.html' %}
+
+{% block title %}{{ labyrinth.title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ labyrinth.title }} from {{ labyrinth.user.username }}</h2>
     <p>{{ labyrinth.description }}</p>
 
     <table>
@@ -41,5 +31,15 @@
             </tr>
         {% endfor %}
     </table>
-</body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    table { border-collapse: collapse; }
+    th { user-select: none; }
+    td { width: 30px; height: 30px; text-align: center; border: 1px solid black; user-select: none; }
+    .wall { background-color: black; }
+    .start { background-color: green; }
+    .end { background-color: red; }
+</style>
+{% endblock %}
