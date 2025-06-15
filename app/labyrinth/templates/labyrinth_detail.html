@@ -4,19 +4,28 @@
 
 {% block content %}
     <h2>{{ labyrinth.title }} from {{ labyrinth.user.username }}</h2>
-    <p>{{ labyrinth.description }}</p>
+    <p><strong>Description:</strong> {{ labyrinth.description or "No description" }}</p>
+    {% set rows = labyrinth.matrix|length %}
+    {% set cols = labyrinth.matrix[0]|length %}
+    {% if rows < 16 and cols < 29 %}
+        {% set size_class = 'table-size-lg' %}
+    {% elif rows < 23 and cols < 41 %}
+        {% set size_class = 'table-size-md' %}
+    {% else %}
+        {% set size_class = 'table-size-sm' %}
+    {% endif %}
 
-    <table>
+    <table class="labyrinth {{ size_class }} no-pointer">
         <tr>
             <th></th>
-            {% for col in range(1, labyrinth.matrix[0]|length + 1) %}
+            {% for col in range(1, cols + 1) %}
                 <th>{{ col }}</th>
             {% endfor %}
         </tr>
-        {% for i in range(labyrinth.matrix|length) %}
+        {% for i in range(rows) %}
             <tr>
                 <th>{{ i + 1 }}</th>
-                {% for j in range(labyrinth.matrix[0]|length) %}
+                {% for j in range(cols) %}
                     {% set cell_class = '' %}
                     {% if labyrinth.matrix[i][j] == 1 %}
                         {% set cell_class = 'wall' %}
@@ -31,15 +40,26 @@
             </tr>
         {% endfor %}
     </table>
+
+    <button onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
 {% endblock %}
 
 {% block scripts %}
-<style>
-    table { border-collapse: collapse; }
-    th { user-select: none; }
-    td { width: 30px; height: 30px; text-align: center; border: 1px solid black; user-select: none; }
-    .wall { background-color: black; }
-    .start { background-color: green; }
-    .end { background-color: red; }
-</style>
+    <script>
+        function deleteLabyrinth(id) {
+            if (!confirm("Are you sure you want to delete this labyrinth?")) return;
+
+            fetch(`/labyrinth/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{{ url_for('labyrinth.my_labyrinths') }}";
+                }
+            })
+        }
+    </script>
 {% endblock %}

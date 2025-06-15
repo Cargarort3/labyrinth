@@ -3,46 +3,25 @@
 {% block title %}My Labyrinths{% endblock %}
 
 {% block content %}
-    <h1>My Labyrinths</h1>
+    <h2>My Labyrinths</h2>
 
     {% if labyrinths %}
-        <ul>
+        <div class="labyrinth-card-container">
             {% for lab in labyrinths %}
-                <li>
-                    <strong>
-                        <a href="{{ url_for('labyrinth.get_labyrinth', id=lab.id) }}">
-                            {{ lab.title }}
-                        </a>
-                    </strong><br>
-                    Description: {{ lab.description }}<br>
-                    Size: {{ lab.matrix|length }} x {{ lab.matrix[0]|length }}<br>
-                    Start: {{ lab.start }}<br>
-                    End: {{ lab.end }}
-                </li>
-                <button onclick="deleteLabyrinth('{{ lab.id }}')">Delete</button>
+                <a href="{{ url_for('labyrinth.get_labyrinth', id=lab.id) }}" class="labyrinth-card-link">
+                    <div class="labyrinth-card">
+                        <strong>{{ lab.title }}</strong>
+                        <p><strong>Description:</strong> {{ lab.description or "No description" }}</p>
+                        <p><strong>Size:</strong> {{ lab.matrix|length }} x {{ lab.matrix[0]|length }}</p>
+                        <p>
+                            <strong>Start:</strong> {{ lab.start }}
+                            <strong>End:</strong> {{ lab.end }}
+                        </p>
+                    </div>
+                </a>
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
         <p>No labyrinths found.</p>
     {% endif %}
-{% endblock %}
-
-{% block scripts %}
-<script>
-    function deleteLabyrinth(id) {
-        if (!confirm("Are you sure you want to delete this labyrinth?")) return;
-
-        fetch(`/labyrinth/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        })
-    }
-</script>
 {% endblock %}

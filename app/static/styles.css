@@ -1,0 +1,188 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f9fc;
+    color: #2c3e50;
+}
+
+header {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+nav {
+    margin-top: 0.5rem;
+}
+nav a {
+    color: #bbdefb;
+    text-decoration: none;
+    margin-right: 1rem;
+    font-weight: 500;
+}
+nav a:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+main {
+    padding: 2rem;
+    max-width: 1500px;
+    margin: auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+.home-buttons {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+.big-button {
+    background-color: #1976d2; /* azul principal */
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.big-button:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+}
+table.labyrinth {
+    table-layout: fixed;
+    width: auto;
+}
+table.labyrinth td {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    cursor: pointer;
+}
+table.labyrinth.no-pointer td {
+    cursor: default;
+}
+.table-size-sm td {
+    width: 25px;
+    height: 25px;
+}
+.table-size-md td {
+    width: 35px;
+    height: 35px;
+}
+.table-size-lg td {
+    width: 50px;
+    height: 50px;
+}
+th, td {
+    text-align: center;
+    border: 1px solid #ddd;
+    user-select: none;
+}
+
+.wall {
+    background-color: #2c3e50;
+}
+.start {
+    background-color: #4caf50;
+    color: white;
+}
+.end {
+    background-color: #e53935;
+    color: white;
+}
+.path {
+    background-color: #2196f3;
+    color: white;
+}
+
+.labyrinth-card-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+.labyrinth-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.labyrinth-card {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.labyrinth-card:hover {
+    transform: translateY(-3px);
+    background-color: #bbdefb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.lab-card-wrapper {
+    position: relative;
+}
+
+p {
+    word-break: break-word;
+}
+button {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0.3rem 0.3rem 0.3rem 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+}
+button:hover {
+    background-color: #1565c0;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="password"],
+textarea,
+select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 0.3rem 0.5rem;
+}
+textarea {
+    resize: vertical;
+}
+
+#error {
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 1rem;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+}
