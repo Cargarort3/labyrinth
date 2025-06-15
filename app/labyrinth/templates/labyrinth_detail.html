@@ -41,11 +41,32 @@
         {% endfor %}
     </table>
 
+    <button onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
     <button onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
 {% endblock %}
 
 {% block scripts %}
     <script>
+        function exportLabyrinth(matrix, start, end) {
+            let jsonText = '{\n';
+            jsonText += '  "matrix": [\n';
+            matrix.forEach((row, i) => {
+                jsonText += '    [' + row.join(', ') + ']' + (i < matrix.length - 1 ? ',' : '') + '\n';
+            });
+            jsonText += '  ],\n';
+            jsonText += '  "start": [' + start.join(', ') + '],\n';
+            jsonText += '  "end": [' + end.join(', ')+ ']\n';
+            jsonText += '}';
+
+            const blob = new Blob([jsonText], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "labyrinth.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         function deleteLabyrinth(id) {
             if (!confirm("Are you sure you want to delete this labyrinth?")) return;
 
