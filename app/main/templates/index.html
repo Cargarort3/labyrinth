@@ -1,37 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
     <h1>Welcome to Labyrinth</h1>
 
-    {% if current_user.is_authenticated %}
-        <p>
-            Hello {{ current_user.username }}
-            <form action="{{ url_for('auth.logout') }}" method="get" style="display:inline;">
-                <button type="submit">Logout</button>
-            </form>
-        </p>
-        <form action="{{ url_for('labyrinth.my_labyrinths') }}" method="get" style="display:inline;">
-            <button type="submit">My labyrinths</button>
-        </form>
-    {% else %}
-        <p>
-            <form action="{{ url_for('auth.register') }}" method="get" style="display:inline;">
-                <button type="submit">Register</button>
-            </form>
-            <form action="{{ url_for('auth.login') }}" method="get" style="display:inline;">
-                <button type="submit">Login</button>
-            </form>
-        </p>
-    {% endif %}
-
-    <p>
-        <form action="{{ url_for('labyrinth.create_labyrinth') }}" method="get" style="display:inline;">
-            <button type="submit">Design labyrinth</button>
-        </form>
-    </p>
-</body>
-</html>
+    <div class="home-buttons">
+        <a href="{{ url_for('labyrinth.create_labyrinth') }}" class="big-button">Design a Labyrinth</a>
+    </div>
+{% endblock %}

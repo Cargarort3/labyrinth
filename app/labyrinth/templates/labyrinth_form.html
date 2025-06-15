@@ -1,15 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create labyrinth</title>
-    <style>
-        table { border-collapse: collapse; }
-        th { user-select: none; }
-        td { width: 30px; height: 30px; text-align: center; border: 1px solid black; cursor: pointer; user-select: none; }
-        .wall { background-color: black; color: white; }
-        .path { background-color: #2196f3; color: white; }
-    </style>
+{% extends 'base.html' %}
+
+{% block title %}Create labyrinth{% endblock %}
+
+{% block content %}
+    <h2>Introduce the labyrinth</h2>
+
+    <label for="rows"><strong>Rows:</strong></label>
+    <input type="number" id="rows" min="5" max="30" value="10">
+    <label for="cols"><strong>Columns:</strong></label>
+    <input type="number" id="cols" min="5" max="50" value="10">
+    <button onclick="generateTable()">Adjust dimensions</button>
+    <button onclick="resetTable()">Reset</button>
+
+    <p>Click the cells to change between path (white) and wall (black).</p>
+
+    <div id="labyrinth-container"></div>
+
+    <p>
+        <strong>Start:</strong>
+        <input type="number" id="start-row" min="1" value="1">
+        <input type="number" id="start-col" min="1" value="1">
+        <strong>End:</strong>
+        <input type="number" id="end-row" min="1" value="10">
+        <input type="number" id="end-col" min="1" value="10">
+    </p>
+
+    <label for="algorithm"><strong>Algorithm:</strong></label>
+    <select id="algorithm">
+        <option value="bfs">BFS</option>
+        <option value="dfs">DFS</option>
+        <option value="rw">Random</option>
+    </select>
+    <button onclick="solveLabyrinth()">Solve</button>
+    <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
+
+    <p id="solution"></p>
+
+    {% if current_user.is_authenticated %}
+        <p>
+            <input type="text" id="title" placeholder="Title" maxlength="50" size="52">
+            <button id="create-btn" onclick="createLabyrinth()">Create</button>
+        </p>
+        <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6"></textarea>
+    {% endif %}
+
+    <p id="error"></p>
+{% endblock %}
+
+{% block scripts %}
     <script>
         function generateTable() {
             document.getElementById("solution").innerText = "";
@@ -20,19 +58,23 @@
             const cols = parseInt(document.getElementById("cols").value);
             const container = document.getElementById("labyrinth-container");
 
+            let sizeClass = "table-size-sm";
+            if (rows < 16 && cols < 29) {
+                sizeClass = "table-size-lg";
+            } else if (rows < 23 && cols < 41) {
+                sizeClass = "table-size-md";
+            }
+
             let matrix = [];
             const oldTable = document.querySelector("#labyrinth-container table");
             if (oldTable) {
                 const oldRows = oldTable.rows;
-
                 for (let i = 1; i < oldRows.length; i++) {
                     let rowData = [];
                     const cells = oldRows[i].cells;
-
                     for (let j = 1; j < cells.length; j++) {
                         rowData.push(cells[j].classList.contains("wall") ? 1 : 0);
                     }
-
                     matrix.push(rowData);
                 }
             }
@@ -46,7 +88,7 @@
                 newMatrix.push(row);
             }
 
-            let html = "<table>";
+            let html = `<table class="labyrinth ${sizeClass}">`;
             html += "<tr><th></th>";
             for (let j = 1; j <= cols; j++) {
                 html += `<th>${j}</th>`;
@@ -82,14 +124,14 @@
         let isMouseDown = false;
         let changeType = true;
         document.addEventListener("mousedown", (e) => {
-            isMouseDown = true; changeType = !e.target.classList.contains("wall");
+            isMouseDown = true;
+            changeType = !e.target.classList.contains("wall");
             if (e.target.tagName === "TD") toggleCell(e.target);
         });
         document.addEventListener("mouseup", () => isMouseDown = false);
 
         function toggleCell(cell) {
             if (document.getElementById("hide-btn").style.display == "inline") return;
-
             if (isMouseDown) {
                 if (cell.classList.contains("wall") && !changeType) {
                     cell.classList.remove("wall");
@@ -108,12 +150,11 @@
             });
             document.getElementById("solution").innerText = "";
             document.getElementById("hide-btn").style.display = "none";
-            return;
         }
 
         function paintPath(path) {
             const table = document.querySelector("#labyrinth-container table");
-            path.forEach(([[i, j],s]) => {
+            path.forEach(([[i, j], s]) => {
                 const row = table.rows[i];
                 const cell = row.cells[j];
                 cell.classList.add("path");
@@ -132,7 +173,6 @@
 
             let matrix = [];
             let rows = document.querySelectorAll("#labyrinth-container table tr");
-
             rows.forEach((row, i) => {
                 if (i === 0) return;
                 let r = [];
@@ -141,7 +181,6 @@
                 });
                 matrix.push(r);
             });
-
 
             let start = [
                 parseInt(document.getElementById("start-row").value),
@@ -156,12 +195,7 @@
             fetch("/labyrinth/solve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    labyrinth: matrix, 
-                    start: start,
-                    end: end,
-                    algorithm: algorithm
-                })
+                body: JSON.stringify({ labyrinth: matrix, start, end, algorithm })
             })
             .then(response => response.json())
             .then(data => {
@@ -174,7 +208,7 @@
                 }
             });
         }
-    
+
         function hideSolution() {
             const table = document.querySelector("#labyrinth-container table");
             table.querySelectorAll("td").forEach(cell => {
@@ -183,13 +217,11 @@
             });
             document.getElementById("solution").innerText = "";
             document.getElementById("hide-btn").style.display = "none";
-            return;
         }
 
         function createLabyrinth() {
             let matrix = [];
             let rows = document.querySelectorAll("#labyrinth-container table tr");
-
             rows.forEach((row, i) => {
                 if (i === 0) return;
                 let r = [];
@@ -211,10 +243,10 @@
             fetch("/labyrinth/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    labyrinth: matrix, 
-                    start: start,
-                    end: end,
+                body: JSON.stringify({
+                    labyrinth: matrix,
+                    start,
+                    end,
                     title: document.getElementById("title").value,
                     description: document.getElementById("description").value
                 })
@@ -223,58 +255,12 @@
                     response.json().then(data => {
                         document.getElementById("error").innerText = data.error;
                     });
-                } else {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    }
+                } else if (response.redirected) {
+                    window.location.href = response.url;
                 }
-            })
+            });
         }
 
         window.onload = generateTable;
     </script>
-</head>
-<body>
-    <h2>Introduce the labyrinth</h2>
-
-    <label for="rows">Rows:</label>
-    <input type="number" id="rows" min="5" max="25" value="10">
-    <label for="cols">Columns:</label>
-    <input type="number" id="cols" min="5" max="25" value="10">
-    <button onclick="generateTable()">Adjust dimensions</button>
-    <button onclick="resetTable()">Reset</button>
-
-    <p>Click the cells to change between path (white) and wall (black).</p>
-    
-    <div id="labyrinth-container"></div>
-
-    <p>
-        Start:
-        <input type="number" id="start-row" min="1" value="1">
-        <input type="number" id="start-col" min="1" value="1">
-        End:
-        <input type="number" id="end-row" min="1" value="10">
-        <input type="number" id="end-col" min="1" value="10">
-    </p>
-    <label for="algorithm">Algorithm:</label>
-    <select id="algorithm">
-        <option value="bfs">BFS</option>
-        <option value="dfs">DFS</option>
-        <option value="rw">Random</option>
-    </select>
-    <button onclick="solveLabyrinth()">Solve</button>
-    <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
-
-    <p id="solution"></p>
-
-    {% if current_user.is_authenticated %}
-        <p>
-            <input type="text" id="title" placeholder="Title" maxlength="50" size="52">
-            <button id="create-btn" onclick="createLabyrinth()">Create</button>
-        </p>
-        <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6"></textarea>
-    {% endif %}
-    <p id="error" style="color: red;"></p>
-
-</body>
-</html>
+{% endblock %}
