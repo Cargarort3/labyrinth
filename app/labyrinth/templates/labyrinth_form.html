@@ -33,8 +33,7 @@
     </select>
     <button onclick="solveLabyrinth()">Solve</button>
     <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
-
-    <p id="solution"></p>
+    <span id="solution"></span>
 
     {% if current_user.is_authenticated %}
         <p>
@@ -45,6 +44,12 @@
     {% endif %}
 
     <p id="error"></p>
+
+    <p>
+        <button onclick="exportLabyrinth()">Export</button>
+        <button onclick="triggerImport()">Import</button>
+        <input type="file" id="import-json" accept=".json" style="display: none;">
+    </p>
 {% endblock %}
 
 {% block scripts %}
@@ -261,6 +266,98 @@
             });
         }
 
+        function exportLabyrinth() {
+            let matrix = [];
+            let rows = document.querySelectorAll("#labyrinth-container table tr");
+            rows.forEach((row, i) => {
+                if (i === 0) return;
+                let r = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    r.push(cell.classList.contains("wall") ? 1 : 0);
+                });
+                matrix.push(r);
+            });
+
+            let start = [
+                parseInt(document.getElementById("start-row").value),
+                parseInt(document.getElementById("start-col").value)
+            ];
+            let end = [
+                parseInt(document.getElementById("end-row").value),
+                parseInt(document.getElementById("end-col").value)
+            ];
+
+            let jsonText = '{\n';
+            jsonText += '  "matrix": [\n';
+            matrix.forEach((row, i) => {
+                jsonText += '    [' + row.join(', ') + ']' + (i < matrix.length - 1 ? ',' : '') + '\n';
+            });
+            jsonText += '  ],\n';
+            jsonText += '  "start": [' + start.join(', ') + '],\n';
+            jsonText += '  "end": [' + end.join(', ')+ ']\n';
+            jsonText += '}';
+
+            const blob = new Blob([jsonText], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "labyrinth.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function triggerImport() {
+            const input = document.getElementById("import-json");
+            input.value = "";
+            input.click();
+        }
+        document.getElementById("import-json").addEventListener("change", importLabyrinth);
+
+        function importLabyrinth(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const { matrix, start, end } = data;
+
+                    if (!Array.isArray(matrix) || !Array.isArray(start) || !Array.isArray(end)) {
+                        throw new Error("Invalid labyrinth format.");
+                    }
+
+                    const rows = matrix.length;
+                    const cols = matrix[0].length;
+
+                    document.getElementById("rows").value = rows;
+                    document.getElementById("cols").value = cols;
+                    generateTable();
+
+                    const table = document.querySelector("#labyrinth-container table");
+                    for (let i = 0; i < rows; i++) {
+                        for (let j = 0; j < cols; j++) {
+                            const cell = table.rows[i + 1].cells[j + 1];
+                            if (matrix[i][j] === 1) {
+                                cell.classList.add("wall");
+                            } else {
+                                cell.classList.remove("wall");
+                            }
+                        }
+                    }
+
+                    document.getElementById("start-row").value = start[0];
+                    document.getElementById("start-col").value = start[1];
+                    document.getElementById("end-row").value = end[0];
+                    document.getElementById("end-col").value = end[1];
+
+                } catch (err) {
+                    alert("Error importing labyrinth: " + err.message);
+                }
+            };
+
+            reader.readAsText(file);
+        }
         window.onload = generateTable;
     </script>
 {% endblock %}
