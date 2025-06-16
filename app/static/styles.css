@@ -41,12 +41,12 @@ main {
 .home-buttons {
     margin-top: 2rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
     align-items: center;
 }
 .big-button {
-    background-color: #1976d2; /* azul principal */
+    background-color: #1976d2;
     color: white;
     padding: 1rem 2rem;
     font-size: 1.25rem;

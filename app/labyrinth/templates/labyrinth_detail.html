@@ -42,6 +42,7 @@
     </table>
 
     <button onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
+    <button onclick="window.location.href='{{ url_for('labyrinth.edit_labyrinth', id=labyrinth.id) }}'">Edit</button>
     <button onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
 {% endblock %}
 

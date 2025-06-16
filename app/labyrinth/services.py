@@ -12,5 +12,8 @@ class LabyrinthService:
     def create_labyrinth(labyrinth):
         return LabyrinthRepository.create(labyrinth)
 
+    def update_labyrinth(labyrinth):
+        return LabyrinthRepository.update(labyrinth)
+
     def delete_labyrinth(id):
         return LabyrinthRepository.delete(id)

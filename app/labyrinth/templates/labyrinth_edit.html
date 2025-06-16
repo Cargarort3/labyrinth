@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Create labyrinth{% endblock %}
+{% block title %}Edit labyrinth{% endblock %}
 
 {% block content %}
     <h2>Introduce the labyrinth</h2>
 
     <label for="rows"><strong>Rows:</strong></label>
-    <input type="number" id="rows" min="5" max="30" value="10">
+    <input type="number" id="rows" min="5" max="30" value="{{ labyrinth.matrix|length }}">
     <label for="cols"><strong>Columns:</strong></label>
-    <input type="number" id="cols" min="5" max="50" value="10">
+    <input type="number" id="cols" min="5" max="50" value="{{ labyrinth.matrix[0]|length }}">
     <button onclick="generateTable()">Adjust dimensions</button>
     <button onclick="resetTable()">Reset</button>
 
@@ -18,11 +18,11 @@
 
     <p>
         <strong>Start:</strong>
-        <input type="number" id="start-row" min="1" value="1">
-        <input type="number" id="start-col" min="1" value="1">
+        <input type="number" id="start-row" min="1" value="{{ labyrinth.get_start()[0]}}">
+        <input type="number" id="start-col" min="1" value="{{ labyrinth.get_start()[1]}}">
         <strong>End:</strong>
-        <input type="number" id="end-row" min="1" value="10">
-        <input type="number" id="end-col" min="1" value="10">
+        <input type="number" id="end-row" min="1" value="{{ labyrinth.get_end()[0]}}">
+        <input type="number" id="end-col" min="1" value="{{ labyrinth.get_end()[1]}}">
     </p>
 
     <label for="algorithm"><strong>Algorithm:</strong></label>
@@ -35,13 +35,11 @@
     <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
     <span id="solution"></span>
 
-    {% if current_user.is_authenticated %}
-        <p>
-            <input type="text" id="title" placeholder="Title" maxlength="50" size="52">
-            <button id="create-btn" onclick="createLabyrinth()">Create</button>
-        </p>
-        <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6"></textarea>
-    {% endif %}
+    <p>
+        <input type="text" id="title" placeholder="Title" maxlength="50" size="52" value="{{ labyrinth.title }}">
+        <button id="create-btn" onclick="editLabyrinth('{{ labyrinth.id }}')">Edit</button>
+    </p>
+    <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6">{{ labyrinth.description }}</textarea>
 
     <p id="error"></p>
 
@@ -124,6 +122,22 @@
                 const el = document.getElementById(id);
                 if (parseInt(el.value) > cols) el.value = cols;
             });
+        }
+
+        function loadLabyrinth(matrix) {
+            generateTable();
+
+            const table = document.querySelector("#labyrinth-container table");
+            for (let i = 0; i < matrix.length; i++) {
+                for (let j = 0; j < matrix[i].length; j++) {
+                    const cell = table.rows[i + 1].cells[j + 1];
+                    if (matrix[i][j] === 1) {
+                        cell.classList.add("wall");
+                    } else {
+                        cell.classList.remove("wall");
+                    }
+                }
+            }
         }
 
         let isMouseDown = false;
@@ -224,7 +238,7 @@
             document.getElementById("hide-btn").style.display = "none";
         }
 
-        function createLabyrinth() {
+        function editLabyrinth(id) {
             let matrix = [];
             let rows = document.querySelectorAll("#labyrinth-container table tr");
             rows.forEach((row, i) => {
@@ -245,7 +259,7 @@
                 parseInt(document.getElementById("end-col").value)
             ];
 
-            fetch("/labyrinth/create", {
+            fetch("/labyrinth/edit/" + id, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -359,6 +373,6 @@
             reader.readAsText(file);
         }
 
-        window.onload = generateTable;
+        window.onload = loadLabyrinth({{ labyrinth.matrix | tojson }});
     </script>
 {% endblock %}

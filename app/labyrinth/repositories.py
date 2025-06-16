@@ -14,6 +14,10 @@ class LabyrinthRepository:
         db.session.commit()
         return labyrinth
 
+    def update(labyrinth):
+        db.session.commit()
+        return labyrinth
+
     def delete(id):
         labyrinth = Labyrinth.query.filter_by(id=id).first()
         db.session.delete(labyrinth)
