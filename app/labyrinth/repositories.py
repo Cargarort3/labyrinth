@@ -18,4 +18,3 @@ class LabyrinthRepository:
         labyrinth = Labyrinth.query.filter_by(id=id).first()
         db.session.delete(labyrinth)
         db.session.commit()
-        return True

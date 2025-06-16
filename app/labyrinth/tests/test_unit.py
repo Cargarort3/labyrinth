@@ -121,6 +121,10 @@ def test_create_and_delete_labyrinth(client):
 
     client.get('/logout')
     login(client, "example2")
+    response = client.get('/labyrinth/1')
+    assert response.status_code == 401
+    assert b"You don't have permission" in response.data
+
     response = client.delete('/labyrinth/1')
     assert response.status_code == 401
     assert b"You don't have permission" in response.data
