@@ -148,7 +148,58 @@ def test_create_and_delete_labyrinth(client):
     assert b"Labyrinth not found" in response.data
 
 
-def test_create_labyrinth_wrong(client):
+def test_edit_labyrinth(client):
+    login(client)
+
+    data = {
+        "title": "Test Labyrinth",
+        "description": "Simple description",
+        "labyrinth": [
+            [0, 1, 0, 1, 0],
+            [0, 0, 0, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 1, 0, 0],
+        ],
+        "start": [1, 1],
+        "end": [5, 5]
+    }
+    client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json', follow_redirects=True)
+
+    response = client.get('/labyrinth/edit/1')
+    assert response.status_code == 200
+    assert b"Test Labyrinth" in response.data
+
+    data = {
+        "title": "Edited Labyrinth",
+        "description": "Better description",
+        "labyrinth": [
+            [0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0],
+        ],
+        "start": [1, 1],
+        "end": [5, 6]
+    }
+    response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json', follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Edited Labyrinth" in response.data
+    assert b"Better description" in response.data
+
+    client.get('/logout')
+    login(client, "example2")
+    response = client.get('/labyrinth/edit/1')
+    assert response.status_code == 401
+    assert b"You don't have permission" in response.data
+
+    response = client.get('/labyrinth/edit/2')
+    assert response.status_code == 404
+    assert b"Labyrinth not found" in response.data
+
+
+def test_create_and_edit_labyrinth_wrong(client):
     login(client)
 
     data = {
@@ -166,6 +217,15 @@ def test_create_labyrinth_wrong(client):
     }
 
     response = client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert response.is_json
+    assert response.get_json() == {"error": "Title is required"}
+
+    data["title"] = "Test Labyrinth"
+    client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+
+    data["title"] = ""
+    response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json')
     assert response.status_code == 400
     assert response.is_json
     assert response.get_json() == {"error": "Title is required"}
