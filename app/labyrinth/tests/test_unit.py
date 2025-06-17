@@ -222,6 +222,32 @@ def test_create_and_edit_labyrinth_wrong(client):
     assert response.get_json() == {"error": "Title is required"}
 
     data["title"] = "Test Labyrinth"
+    data["end"] = [6, 5]
+    response = client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert response.is_json
+    assert response.get_json() == {"error": "Start and end coordinates are out of bounds"}
+
+    data["end"] = [5, 4]
+    data["labyrinth"] = [
+        [0, 1, 0, 1],
+        [0, 0, 0, 1],
+        [1, 0, 1, 1],
+        [1, 0, 1, 1],
+        [1, 0, 1, 0],
+    ]
+    response = client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert response.is_json
+    assert response.get_json() == {"error": "Labyrinth dimensions must be between 5x5 and 30x50"}
+
+    data["labyrinth"] = [
+        [0, 1, 0, 1, 0],
+        [0, 0, 0, 1, 0],
+        [1, 0, 1, 1, 0],
+        [1, 0, 1, 1, 0],
+        [1, 0, 1, 0, 0],
+    ]
     client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
 
     data["title"] = ""
@@ -229,3 +255,24 @@ def test_create_and_edit_labyrinth_wrong(client):
     assert response.status_code == 400
     assert response.is_json
     assert response.get_json() == {"error": "Title is required"}
+
+    data["title"] = "Test Labyrinth"
+    data["start"] = [1, 0]
+    response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert response.is_json
+    assert response.get_json() == {"error": "Start and end coordinates are out of bounds"}
+
+    data["start"] = [1, 1]
+    data["labyrinth"] = [
+        [0, 1, 0, 1, 0], [0, 0, 0, 1, 0], [1, 0, 1, 1, 0], [1, 0, 1, 1, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0],
+        [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0],
+        [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0],
+        [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0],
+        [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0], [1, 0, 1, 0, 0],
+        [1, 0, 1, 0, 0],
+    ]
+    response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert response.is_json
+    assert response.get_json() == {"error": "Labyrinth dimensions must be between 5x5 and 30x50"}
