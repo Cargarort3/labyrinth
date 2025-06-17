@@ -1,5 +1,5 @@
 from flask import Flask
-from .config import Config, TestingConfig
+from .config import Config, TestingConfig, DeploymentConfig
 from .database import db, migrate, login_manager
 from .main.routes import main
 from .auth.routes import auth
@@ -10,6 +10,8 @@ def create_app(config_name=None):
     app = Flask(__name__)
     if config_name == 'testing':
         app.config.from_object(TestingConfig)
+    elif config_name == 'deployment':
+        app.config.from_object(DeploymentConfig)
     else:
         app.config.from_object(Config)
 
