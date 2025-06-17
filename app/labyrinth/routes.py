@@ -58,11 +58,44 @@ def my_labyrinths():
 
 
 @labyrinth.route('/<int:id>', methods=['GET'])
+@login_required
 def get_labyrinth(id):
     labyrinth = LabyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
+    if labyrinth.user.id != current_user.id:
+        return "You don't have permission", 401
     return render_template('labyrinth_detail.html', labyrinth=labyrinth)
+
+
+@labyrinth.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_labyrinth(id):
+    labyrinth = LabyrinthService.get_labyrinth_by_id(id)
+    if not labyrinth:
+        return "Labyrinth not found", 404
+    if labyrinth.user.id != current_user.id:
+        return "You don't have permission", 401
+
+    if request.method == 'POST':
+        data = request.json
+        start = tuple(data["start"])
+        end = tuple(data["end"])
+
+        if not data["title"].strip():
+            return jsonify({"error": "Title is required"}), 400
+
+        labyrinth.title = data["title"]
+        labyrinth.description = data["description"]
+        labyrinth.matrix = data["labyrinth"]
+        labyrinth.set_start(start)
+        labyrinth.set_end(end)
+
+        labyrinth = LabyrinthService.update_labyrinth(labyrinth)
+
+        return redirect(url_for('labyrinth.get_labyrinth', id=labyrinth.id))
+
+    return render_template('labyrinth_edit.html', labyrinth=labyrinth)
 
 
 @labyrinth.route('/<int:id>', methods=['DELETE'])
