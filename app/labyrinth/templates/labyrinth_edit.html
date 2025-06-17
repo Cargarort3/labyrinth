@@ -52,11 +52,24 @@
 
 {% block scripts %}
     <script>
+        function adjustInputValue(inputId) {
+            const input = document.getElementById(inputId);
+            let value = parseInt(input.value);
+            if (value < input.min || isNaN(value)) {
+                value = input.min;
+            } else if (value > input.max) {
+                value = input.max;
+            }
+            input.value = value;
+        }
+        
         function generateTable() {
             document.getElementById("solution").innerText = "";
             document.getElementById("hide-btn").style.display = "none";
             document.getElementById("error").innerText = "";
 
+            adjustInputValue("rows");
+            adjustInputValue("cols");
             const rows = parseInt(document.getElementById("rows").value);
             const cols = parseInt(document.getElementById("cols").value);
             const container = document.getElementById("labyrinth-container");
@@ -113,15 +126,10 @@
             document.getElementById("start-col").max = cols;
             document.getElementById("end-row").max = rows;
             document.getElementById("end-col").max = cols;
-
-            ["start-row", "end-row"].forEach(id => {
-                const el = document.getElementById(id);
-                if (parseInt(el.value) > rows) el.value = rows;
-            });
-            ["start-col", "end-col"].forEach(id => {
-                const el = document.getElementById(id);
-                if (parseInt(el.value) > cols) el.value = cols;
-            });
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
         }
 
         function loadLabyrinth(matrix) {
@@ -201,6 +209,10 @@
                 matrix.push(r);
             });
 
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
             let start = [
                 parseInt(document.getElementById("start-row").value),
                 parseInt(document.getElementById("start-col").value)
@@ -250,6 +262,10 @@
                 matrix.push(r);
             });
 
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
             let start = [
                 parseInt(document.getElementById("start-row").value),
                 parseInt(document.getElementById("start-col").value)
@@ -292,6 +308,10 @@
                 matrix.push(r);
             });
 
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
             let start = [
                 parseInt(document.getElementById("start-row").value),
                 parseInt(document.getElementById("start-col").value)
@@ -343,11 +363,21 @@
 
                     const rows = matrix.length;
                     const cols = matrix[0].length;
-
+                    if (rows < 5 || cols < 5 || rows > 30 || cols > 50) {
+                        throw new Error("Matrix dimensions must be between 5x5 and 30x50.");
+                    }
                     document.getElementById("rows").value = rows;
                     document.getElementById("cols").value = cols;
-                    generateTable();
 
+                    if (start[0] < 1 || start[0] > rows || start[1] < 1 || start[1] > cols || end[0] < 1 || end[0] > rows || end[1] < 1 || end[1] > cols) {
+                        throw new Error("Start and end positions must be within the labyrinth dimensions.");
+                    }
+                    document.getElementById("start-row").value = start[0];
+                    document.getElementById("start-col").value = start[1];
+                    document.getElementById("end-row").value = end[0];
+                    document.getElementById("end-col").value = end[1];
+
+                    generateTable();
                     const table = document.querySelector("#labyrinth-container table");
                     for (let i = 0; i < rows; i++) {
                         for (let j = 0; j < cols; j++) {
@@ -360,13 +390,8 @@
                         }
                     }
 
-                    document.getElementById("start-row").value = start[0];
-                    document.getElementById("start-col").value = start[1];
-                    document.getElementById("end-row").value = end[0];
-                    document.getElementById("end-col").value = end[1];
-
                 } catch (err) {
-                    alert("Error importing labyrinth: " + err.message);
+                    document.getElementById("error").innerText = err.message;
                 }
             };
 
