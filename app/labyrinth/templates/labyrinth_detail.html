@@ -15,39 +15,67 @@
         {% set size_class = 'table-size-sm' %}
     {% endif %}
 
-    <table class="labyrinth {{ size_class }} no-pointer">
-        <tr>
-            <th></th>
-            {% for col in range(1, cols + 1) %}
-                <th>{{ col }}</th>
-            {% endfor %}
-        </tr>
-        {% for i in range(rows) %}
+    <div id="labyrinth-container">
+        <table class="labyrinth {{ size_class }} no-pointer">
             <tr>
-                <th>{{ i + 1 }}</th>
-                {% for j in range(cols) %}
-                    {% set cell_class = '' %}
-                    {% if labyrinth.matrix[i][j] == 1 %}
-                        {% set cell_class = 'wall' %}
-                    {% endif %}
-                    {% if (i+1, j+1) == labyrinth.get_start() %}
-                        {% set cell_class = 'start' %}
-                    {% elif (i+1, j+1) == labyrinth.get_end() %}
-                        {% set cell_class = 'end' %}
-                    {% endif %}
-                    <td class="{{ cell_class }}"></td>
+                <th></th>
+                {% for col in range(1, cols + 1) %}
+                    <th>{{ col }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    </table>
-
+            {% for i in range(rows) %}
+                <tr>
+                    <th>{{ i + 1 }}</th>
+                    {% for j in range(cols) %}
+                        {% set cell_class = '' %}
+                        {% if labyrinth.matrix[i][j] == 1 %}
+                            {% set cell_class = 'wall' %}
+                        {% endif %}
+                        {% if (i+1, j+1) == labyrinth.get_start() %}
+                            {% set cell_class = 'start' %}
+                        {% elif (i+1, j+1) == labyrinth.get_end() %}
+                            {% set cell_class = 'end' %}
+                        {% endif %}
+                        <td class="{{ cell_class }}"></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+   
+    <button onclick="printLabyrinth()">Print</button>
     <button onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
     <button onclick="window.location.href='{{ url_for('labyrinth.edit_labyrinth', id=labyrinth.id) }}'">Edit</button>
     <button onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script>
+        function printLabyrinth() {
+            const original = document.getElementById("labyrinth-container");
+
+            const clone = original.cloneNode(true);
+            clone.style.position = "fixed";
+            document.body.appendChild(clone);
+
+            clone.querySelector("tr").remove();
+            const allRows = clone.querySelectorAll("tr");
+            allRows.forEach(row => {
+                row.querySelector("th").remove();
+            });
+
+            html2canvas(clone, {
+                scale: 3
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'labyrinth.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                document.body.removeChild(clone);
+            });
+        }
+
         function exportLabyrinth(matrix, start, end) {
             let jsonText = '{\n';
             jsonText += '  "matrix": [\n';

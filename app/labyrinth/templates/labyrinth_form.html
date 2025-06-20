@@ -46,6 +46,7 @@
     <p id="error"></p>
 
     <p>
+        <button onclick="printLabyrinth()">Print</button>
         <button onclick="exportLabyrinth()">Export</button>
         <button onclick="triggerImport()">Import</button>
         <input type="file" id="import-json" accept=".json" style="display: none;">
@@ -53,6 +54,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script>
         function adjustInputValue(inputId) {
             const input = document.getElementById(inputId);
@@ -279,6 +281,42 @@
                 } else if (response.redirected) {
                     window.location.href = response.url;
                 }
+            });
+        }
+
+        function printLabyrinth() {
+            const original = document.getElementById("labyrinth-container");
+
+            const clone = original.cloneNode(true);
+            clone.style.position = "fixed";
+
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
+            const startRow = parseInt(document.getElementById("start-row").value);
+            const startCol = parseInt(document.getElementById("start-col").value);
+            const endRow = parseInt(document.getElementById("end-row").value);
+            const endCol = parseInt(document.getElementById("end-col").value);
+            const table = clone.querySelector("table");
+            table.rows[startRow].cells[startCol].classList.add("start");
+            table.rows[endRow].cells[endCol].classList.add("end");
+
+            clone.querySelector("tr").remove();
+            const allRows = clone.querySelectorAll("tr");
+            allRows.forEach(row => {
+                row.querySelector("th").remove();
+            });
+            document.body.appendChild(clone);
+
+            html2canvas(clone, {
+                scale: 3
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'labyrinth.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                document.body.removeChild(clone);
             });
         }
 
