@@ -63,7 +63,7 @@ def random_walk(matrix, start, end):
     path = [start]
     current = start
 
-    for _ in range(100):
+    for _ in range(1000):
         for _ in range(rows*cols - 1):
             if current == end:
                 return path
@@ -101,3 +101,39 @@ def path_movements(path):
     res.append((path[-1], "🚩"))
 
     return res
+
+
+def generate_random_labyrinth(dimensions, start, end):
+    n, m = dimensions
+    x1, y1 = start[0] - 1, start[1] - 1
+    x2, y2 = end[0] - 1, end[1] - 1
+
+    lab = [[1] * m for _ in range(n)]
+    lab[x1][y1] = 0
+    lab[x2][y2] = 0
+    directions = [(-2, 0), (2, 0), (0, -2), (0, 2)]
+
+    def in_bounds(x, y):
+        return 0 <= x < n and 0 <= y < m
+
+    def dfs(x, y):
+        lab[x][y] = 0
+        random.shuffle(directions)
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            mx, my = x + dx // 2, y + dy // 2
+            if in_bounds(nx, ny) and lab[nx][ny] == 1:
+                lab[mx][my] = 0
+                dfs(nx, ny)
+
+    dfs(x1, y1)
+
+    end1, end2 = x2, y2
+    while bfs(matrix_to_graph(lab), (x1 + 1, y1 + 1), (x2 + 1, y2 + 1)) is None:
+        dx, dy = random.choice([(-1, 0), (1, 0), (0, -1), (0, 1)])
+        nx, ny = end1 + dx, end2 + dy
+        if in_bounds(nx, ny):
+            lab[nx][ny] = 0
+            end1, end2 = nx, ny
+
+    return lab
