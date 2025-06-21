@@ -1,6 +1,8 @@
+import pytest
 from flask_login import current_user
 
 
+@pytest.mark.unit
 def test_auth_screens(client):
     response = client.get('/register')
     assert response.status_code == 200
@@ -11,6 +13,7 @@ def test_auth_screens(client):
     assert b"Login" in response.data
 
 
+@pytest.mark.unit
 def test_auth_success(client):
     response = client.post('/register', data={
         "username": "example",
@@ -41,6 +44,7 @@ def test_auth_success(client):
     assert b"Login" in response.data
 
 
+@pytest.mark.unit
 def test_login_wrong(client):
     client.post('/register', data={
         "username": "example",
@@ -64,6 +68,7 @@ def test_login_wrong(client):
     assert b"Login" in response.data
 
 
+@pytest.mark.unit
 def test_register_wrong(client):
     client.post('/register', data={
         "username": "example",

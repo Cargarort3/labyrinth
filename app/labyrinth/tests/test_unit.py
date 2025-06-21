@@ -1,3 +1,4 @@
+import pytest
 import json
 from app.auth.repositories import UserRepository
 from app.labyrinth.algorithms import bfs, matrix_to_graph
@@ -13,6 +14,7 @@ def login(client, username="example", password="password"):
     }, follow_redirects=True)
 
 
+@pytest.mark.unit
 def test_labyrinth_screens(client):
     response = client.get('/labyrinth/create')
     assert response.status_code == 200
@@ -24,6 +26,7 @@ def test_labyrinth_screens(client):
     assert b"My Labyrinths" in response.data
 
 
+@pytest.mark.unit
 def test_solve_labyrinth_success(client):
     data = {
         "labyrinth": [
@@ -64,6 +67,7 @@ def test_solve_labyrinth_success(client):
     assert b"Register" in response.data
 
 
+@pytest.mark.unit
 def test_solve_labyrinth_no_solution(client):
     data = {
         "labyrinth": [
@@ -95,6 +99,7 @@ def test_solve_labyrinth_no_solution(client):
     assert result["path"] is None
 
 
+@pytest.mark.unit
 def test_create_and_delete_labyrinth(client):
     login(client)
 
@@ -149,6 +154,7 @@ def test_create_and_delete_labyrinth(client):
     assert b"Labyrinth not found" in response.data
 
 
+@pytest.mark.unit
 def test_edit_labyrinth(client):
     login(client)
 
@@ -200,6 +206,7 @@ def test_edit_labyrinth(client):
     assert b"Labyrinth not found" in response.data
 
 
+@pytest.mark.unit
 def test_create_and_edit_labyrinth_wrong(client):
     login(client)
 
@@ -275,6 +282,7 @@ def test_create_and_edit_labyrinth_wrong(client):
     assert b"Labyrinth dimensions must be between 5x5 and 30x50" in response.data
 
 
+@pytest.mark.unit
 def test_generate_labyrinth(client):
     data = {
         "dimensions": [5, 5],
@@ -290,6 +298,7 @@ def test_generate_labyrinth(client):
     assert bfs(matrix_to_graph(result["matrix"]), (1, 1), (5, 5)) is not None
 
 
+@pytest.mark.unit
 def test_generate_labyrinth_wrong(client):
     data = {
         "dimensions": [5, 51],
