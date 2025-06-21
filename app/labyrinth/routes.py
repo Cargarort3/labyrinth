@@ -55,9 +55,9 @@ def create_labyrinth():
         rows = len(data["labyrinth"])
         cols = len(data["labyrinth"][0])
         if (rows < 5 or cols < 5 or rows > 30 or cols > 50):
-            return jsonify({"error": "Labyrinth dimensions must be between 5x5 and 30x50"}), 400
+            return "Labyrinth dimensions must be between 5x5 and 30x50", 400
         if (start[0] < 1 or start[0] > rows or start[1] < 1 or start[1] > cols or end[0] < 1 or end[0] > rows or end[1] < 1 or end[1] > cols):
-            return jsonify({"error": "Start and end coordinates are out of bounds"}), 400
+            return "Start and end coordinates are out of bounds", 400
         if not data["title"].strip():
             return jsonify({"error": "Title is required"}), 400
 
@@ -107,9 +107,9 @@ def edit_labyrinth(id):
         rows = len(data["labyrinth"])
         cols = len(data["labyrinth"][0])
         if (rows < 5 or cols < 5 or rows > 30 or cols > 50):
-            return jsonify({"error": "Labyrinth dimensions must be between 5x5 and 30x50"}), 400
+            return "Labyrinth dimensions must be between 5x5 and 30x50", 400
         if (start[0] < 1 or start[0] > rows or start[1] < 1 or start[1] > cols or end[0] < 1 or end[0] > rows or end[1] < 1 or end[1] > cols):
-            return jsonify({"error": "Start and end coordinates are out of bounds"}), 400
+            return "Start and end coordinates are out of bounds", 400
         if not data["title"].strip():
             return jsonify({"error": "Title is required"}), 400
 
