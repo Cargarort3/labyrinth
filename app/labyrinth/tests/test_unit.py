@@ -1,5 +1,6 @@
 import json
 from app.auth.repositories import UserRepository
+from app.labyrinth.algorithms import bfs, matrix_to_graph
 
 
 def login(client, username="example", password="password"):
@@ -225,8 +226,7 @@ def test_create_and_edit_labyrinth_wrong(client):
     data["end"] = [6, 5]
     response = client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
     assert response.status_code == 400
-    assert response.is_json
-    assert response.get_json() == {"error": "Start and end coordinates are out of bounds"}
+    assert b"Start and end coordinates are out of bounds" in response.data
 
     data["end"] = [5, 4]
     data["labyrinth"] = [
@@ -238,8 +238,7 @@ def test_create_and_edit_labyrinth_wrong(client):
     ]
     response = client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
     assert response.status_code == 400
-    assert response.is_json
-    assert response.get_json() == {"error": "Labyrinth dimensions must be between 5x5 and 30x50"}
+    assert b"Labyrinth dimensions must be between 5x5 and 30x50" in response.data
 
     data["labyrinth"] = [
         [0, 1, 0, 1, 0],
@@ -260,8 +259,7 @@ def test_create_and_edit_labyrinth_wrong(client):
     data["start"] = [1, 0]
     response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json')
     assert response.status_code == 400
-    assert response.is_json
-    assert response.get_json() == {"error": "Start and end coordinates are out of bounds"}
+    assert b"Start and end coordinates are out of bounds" in response.data
 
     data["start"] = [1, 1]
     data["labyrinth"] = [
@@ -274,5 +272,37 @@ def test_create_and_edit_labyrinth_wrong(client):
     ]
     response = client.post('/labyrinth/edit/1', data=json.dumps(data), content_type='application/json')
     assert response.status_code == 400
-    assert response.is_json
-    assert response.get_json() == {"error": "Labyrinth dimensions must be between 5x5 and 30x50"}
+    assert b"Labyrinth dimensions must be between 5x5 and 30x50" in response.data
+
+
+def test_generate_labyrinth(client):
+    data = {
+        "dimensions": [5, 5],
+        "start": [1, 1],
+        "end": [5, 5]
+    }
+
+    response = client.post('/labyrinth/generate', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 200
+    result = response.get_json()
+    assert len(result["matrix"]) == 5
+    assert len(result["matrix"][0]) == 5
+    assert bfs(matrix_to_graph(result["matrix"]), (1, 1), (5, 5)) is not None
+
+
+def test_generate_labyrinth_wrong(client):
+    data = {
+        "dimensions": [5, 51],
+        "start": [1, 1],
+        "end": [5, 5]
+    }
+
+    response = client.post('/labyrinth/generate', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert b"Labyrinth dimensions must be between 5x5 and 30x50" in response.data
+
+    data["dimensions"] = [5, 5]
+    data["end"] = [6, 5]
+    response = client.post('/labyrinth/generate', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 400
+    assert b"Start and end coordinates are out of bounds" in response.data

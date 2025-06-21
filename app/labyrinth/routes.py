@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from flask_login import current_user, login_required
 from .repositories import Labyrinth
 from .services import LabyrinthService
-from .algorithms import matrix_to_graph, bfs, dfs, random_walk, path_movements
+from .algorithms import matrix_to_graph, bfs, dfs, random_walk, path_movements, generate_random_labyrinth
 
 
 labyrinth = Blueprint("labyrinth", __name__, template_folder="templates", url_prefix="/labyrinth")
@@ -28,6 +28,22 @@ def solve_labyrinth():
     return jsonify({"path": path_movements(path) if path else None})
 
 
+@labyrinth.route('/generate', methods=['POST'])
+def generate_labyrinth():
+    data = request.json
+    dimensions = tuple(data["dimensions"])
+    start = tuple(data["start"])
+    end = tuple(data["end"])
+
+    if dimensions[0] < 5 or dimensions[1] < 5 or dimensions[0] > 30 or dimensions[1] > 50:
+        return "Labyrinth dimensions must be between 5x5 and 30x50", 400
+    if (start[0] < 1 or start[0] > dimensions[0] or start[1] < 1 or start[1] > dimensions[1] or
+            end[0] < 1 or end[0] > dimensions[0] or end[1] < 1 or end[1] > dimensions[1]):
+        return "Start and end coordinates are out of bounds", 400
+
+    return jsonify({"matrix": generate_random_labyrinth(dimensions, start, end)})
+
+
 @labyrinth.route('/create', methods=['GET', 'POST'])
 def create_labyrinth():
 
@@ -39,9 +55,9 @@ def create_labyrinth():
         rows = len(data["labyrinth"])
         cols = len(data["labyrinth"][0])
         if (rows < 5 or cols < 5 or rows > 30 or cols > 50):
-            return jsonify({"error": "Labyrinth dimensions must be between 5x5 and 30x50"}), 400
+            return "Labyrinth dimensions must be between 5x5 and 30x50", 400
         if (start[0] < 1 or start[0] > rows or start[1] < 1 or start[1] > cols or end[0] < 1 or end[0] > rows or end[1] < 1 or end[1] > cols):
-            return jsonify({"error": "Start and end coordinates are out of bounds"}), 400
+            return "Start and end coordinates are out of bounds", 400
         if not data["title"].strip():
             return jsonify({"error": "Title is required"}), 400
 
@@ -91,9 +107,9 @@ def edit_labyrinth(id):
         rows = len(data["labyrinth"])
         cols = len(data["labyrinth"][0])
         if (rows < 5 or cols < 5 or rows > 30 or cols > 50):
-            return jsonify({"error": "Labyrinth dimensions must be between 5x5 and 30x50"}), 400
+            return "Labyrinth dimensions must be between 5x5 and 30x50", 400
         if (start[0] < 1 or start[0] > rows or start[1] < 1 or start[1] > cols or end[0] < 1 or end[0] > rows or end[1] < 1 or end[1] > cols):
-            return jsonify({"error": "Start and end coordinates are out of bounds"}), 400
+            return "Start and end coordinates are out of bounds", 400
         if not data["title"].strip():
             return jsonify({"error": "Title is required"}), 400
 

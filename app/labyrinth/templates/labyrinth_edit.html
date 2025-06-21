@@ -23,6 +23,7 @@
         <strong>End:</strong>
         <input type="number" id="end-row" min="1" value="{{ labyrinth.get_end()[0]}}">
         <input type="number" id="end-col" min="1" value="{{ labyrinth.get_end()[1]}}">
+        <button onclick="generateRandomLabyrinth()">Random generator</button>
     </p>
 
     <label for="algorithm"><strong>Algorithm:</strong></label>
@@ -252,6 +253,42 @@
             document.getElementById("hide-btn").style.display = "none";
         }
 
+        function generateRandomLabyrinth() {
+            hideSolution();
+            document.getElementById("error").innerText = "";
+            const table = document.querySelector("#labyrinth-container table");
+            const rows = table.rows.length - 1;
+            const cols = table.rows[0].cells.length - 1;
+
+            adjustInputValue("start-row");
+            adjustInputValue("start-col");
+            adjustInputValue("end-row");
+            adjustInputValue("end-col");
+            const startRow = parseInt(document.getElementById("start-row").value);
+            const startCol = parseInt(document.getElementById("start-col").value);
+            const endRow = parseInt(document.getElementById("end-row").value);
+            const endCol = parseInt(document.getElementById("end-col").value);
+
+            fetch("/labyrinth/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dimensions: [rows, cols], start: [startRow, startCol], end: [endRow, endCol] })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.matrix) {
+                    data.matrix.forEach((row, i) => {
+                        row.forEach((cell, j) => {
+                            table.rows[i + 1].cells[j + 1].classList.remove("wall");
+                            if (cell === 1) {
+                                table.rows[i + 1].cells[j + 1].classList.add("wall");
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
         function editLabyrinth(id) {
             let matrix = [];
             let rows = document.querySelectorAll("#labyrinth-container table tr");
@@ -333,7 +370,6 @@
                 document.body.removeChild(clone);
             });
         }
-
 
         function exportLabyrinth() {
             let matrix = [];
