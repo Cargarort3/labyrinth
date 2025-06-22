@@ -9,7 +9,7 @@
     <input type="number" id="rows" min="5" max="30" value="10">
     <label for="cols"><strong>Columns:</strong></label>
     <input type="number" id="cols" min="5" max="50" value="10">
-    <button onclick="generateTable()">Adjust dimensions</button>
+    <button id="adjust" onclick="generateTable()">Adjust dimensions</button>
     <button onclick="resetTable()">Reset</button>
 
     <p>Click the cells to change between path (white) and wall (black).</p>
@@ -23,7 +23,7 @@
         <strong>End:</strong>
         <input type="number" id="end-row" min="1" value="10">
         <input type="number" id="end-col" min="1" value="10">
-        <button onclick="generateRandomLabyrinth()">Random generator</button>
+        <button id="generator" onclick="generateRandomLabyrinth()">Random generator</button>
     </p>
 
     <label for="algorithm"><strong>Algorithm:</strong></label>
@@ -32,14 +32,14 @@
         <option value="dfs">DFS</option>
         <option value="rw">Random</option>
     </select>
-    <button onclick="solveLabyrinth()">Solve</button>
-    <button id="hide-btn" onclick="hideSolution()" style="display: none;">Hide solution</button>
+    <button id="solve" onclick="solveLabyrinth()">Solve</button>
+    <button id="hide" onclick="hideSolution()" style="display: none;">Hide solution</button>
     <span id="solution"></span>
 
     {% if current_user.is_authenticated %}
         <p>
             <input type="text" id="title" placeholder="Title" maxlength="50" size="52">
-            <button id="create-btn" onclick="createLabyrinth()">Create</button>
+            <button id="create" onclick="createLabyrinth()">Create</button>
         </p>
         <textarea id="description" placeholder="Description (optional)" maxlength="255" cols="48" rows="6"></textarea>
     {% endif %}
@@ -47,9 +47,9 @@
     <p id="error"></p>
 
     <p>
-        <button onclick="printLabyrinth()">Print</button>
-        <button onclick="exportLabyrinth()">Export</button>
-        <button onclick="triggerImport()">Import</button>
+        <button id="print" onclick="printLabyrinth()">Print</button>
+        <button id="export" onclick="exportLabyrinth()">Export</button>
+        <button id="import" onclick="triggerImport()">Import</button>
         <input type="file" id="import-json" accept=".json" style="display: none;">
     </p>
 {% endblock %}
@@ -70,7 +70,7 @@
 
         function generateTable() {
             document.getElementById("solution").innerText = "";
-            document.getElementById("hide-btn").style.display = "none";
+            document.getElementById("hide").style.display = "none";
             document.getElementById("error").innerText = "";
 
             adjustInputValue("rows");
@@ -147,7 +147,7 @@
         document.addEventListener("mouseup", () => isMouseDown = false);
 
         function toggleCell(cell) {
-            if (document.getElementById("hide-btn").style.display == "inline") return;
+            if (document.getElementById("hide").style.display == "inline") return;
             if (isMouseDown) {
                 if (cell.classList.contains("wall") && !changeType) {
                     cell.classList.remove("wall");
@@ -165,7 +165,7 @@
                 cell.innerText = "";
             });
             document.getElementById("solution").innerText = "";
-            document.getElementById("hide-btn").style.display = "none";
+            document.getElementById("hide").style.display = "none";
         }
 
         function paintPath(path) {
@@ -222,7 +222,7 @@
                 if (data.path) {
                     document.getElementById("solution").innerText = `Solution found! (${data.path.length-1} steps)`;
                     paintPath(data.path);
-                    document.getElementById("hide-btn").style.display = "inline";
+                    document.getElementById("hide").style.display = "inline";
                 } else {
                     document.getElementById("solution").innerText = "Solution not found";
                 }
@@ -236,7 +236,7 @@
                 cell.innerText = "";
             });
             document.getElementById("solution").innerText = "";
-            document.getElementById("hide-btn").style.display = "none";
+            document.getElementById("hide").style.display = "none";
         }
 
         function generateRandomLabyrinth() {

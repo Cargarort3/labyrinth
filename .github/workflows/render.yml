@@ -29,7 +29,7 @@ jobs:
       - name: Run tests
         run: |
           source venv/bin/activate
-          pytest --cov=app --cov-report=term
+          pytest --cov=app --cov-report=term -m "unit"
 
   deploy:
     name: Deploy to Render

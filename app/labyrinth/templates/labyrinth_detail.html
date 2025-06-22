@@ -43,10 +43,10 @@
         </table>
     </div>
    
-    <button onclick="printLabyrinth()">Print</button>
-    <button onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
-    <button onclick="window.location.href='{{ url_for('labyrinth.edit_labyrinth', id=labyrinth.id) }}'">Edit</button>
-    <button onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
+    <button id="print" onclick="printLabyrinth()">Print</button>
+    <button id="export" onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
+    <button id="edit" onclick="window.location.href='{{ url_for('labyrinth.edit_labyrinth', id=labyrinth.id) }}'">Edit</button>
+    <button id="delete" onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
 {% endblock %}
 
 {% block scripts %}
