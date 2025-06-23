@@ -10,6 +10,7 @@ class Labyrinth(db.Model):
     matrix = db.Column(db.JSON, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    is_published = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_start(self):
         return tuple(map(int, self.start.split(',')))
