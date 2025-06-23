@@ -6,9 +6,10 @@
     <h1>Welcome to Labyrinth</h1>
 
     <div class="home-buttons">
-        <a href="{{ url_for('labyrinth.create_labyrinth') }}" class="big-button">Design a Labyrinth</a>
+        <a href="{{ url_for('labyrinth.create_labyrinth') }}" class="big-button">Design a labyrinth</a>
+        <a href="{{ url_for('publication.get_all_publications') }}" class="big-button">Discover labyrinths</a>
         {% if current_user.is_authenticated %}
-            <a href="{{ url_for('labyrinth.my_labyrinths') }}" class="big-button">My Labyrinths</a>
+            <a href="{{ url_for('labyrinth.my_labyrinths') }}" class="big-button">My labyrinths</a>
         {% endif %}
     </div>
 {% endblock %}

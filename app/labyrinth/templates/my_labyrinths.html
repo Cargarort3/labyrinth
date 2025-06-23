@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}My Labyrinths{% endblock %}
+{% block title %}My labyrinths{% endblock %}
 
 {% block content %}
-    <h2>My Labyrinths</h2>
+    <h2>My labyrinths</h2>
 
     {% if labyrinths %}
         <div class="labyrinth-card-container">
@@ -17,6 +17,7 @@
                             <strong>Start:</strong> {{ lab.start }}
                             <strong>End:</strong> {{ lab.end }}
                         </p>
+                        <p><strong>Published:</strong> {{ 'Yes' if lab.is_published else 'No' }}</p>
                     </div>
                 </a>
             {% endfor %}
