@@ -4,6 +4,7 @@ from .database import db, login_manager
 from .main.routes import main
 from .auth.routes import auth
 from .labyrinth.routes import labyrinth
+from .publication.routes import publication
 
 
 def create_app(config_name=None):
@@ -21,6 +22,7 @@ def create_app(config_name=None):
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(labyrinth)
+    app.register_blueprint(publication)
 
     with app.app_context():
         db.create_all()
