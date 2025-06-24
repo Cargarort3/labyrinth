@@ -34,7 +34,7 @@ class AuthSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.TAG_NAME, "form").submit()
         time.sleep(1)
 
-        self.driver.find_element(By.LINK_TEXT, "Design a Labyrinth").click()
+        self.driver.find_element(By.LINK_TEXT, "Design a labyrinth").click()
         time.sleep(1)
         json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "labyrinth.json"))
         self.driver.find_element(By.ID, "import-json").send_keys(json_path)

@@ -23,7 +23,7 @@ def test_labyrinth_screens(client):
     login(client)
     response = client.get('/labyrinth/')
     assert response.status_code == 200
-    assert b"My Labyrinths" in response.data
+    assert b"My labyrinths" in response.data
 
 
 @pytest.mark.unit

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import current_user, login_required
-from .repositories import Labyrinth
+from .models import Labyrinth
 from .services import LabyrinthService
 from .algorithms import matrix_to_graph, bfs, dfs, random_walk, path_movements, generate_random_labyrinth
 
@@ -98,6 +98,8 @@ def edit_labyrinth(id):
         return "Labyrinth not found", 404
     if labyrinth.user.id != current_user.id:
         return "You don't have permission", 401
+    if labyrinth.is_published:
+        return "You can't edit a published labyrinth", 400
 
     if request.method == 'POST':
         data = request.json
@@ -132,9 +134,10 @@ def delete_labyrinth(id):
     labyrinth = LabyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
-
-    if labyrinth.user.id == current_user.id:
-        LabyrinthService.delete_labyrinth(id)
-        return "Labyrinth deleted"
-    else:
+    if labyrinth.user.id != current_user.id:
         return "You don't have permission", 401
+    if labyrinth.is_published:
+        return "You can't delete a published labyrinth", 400
+
+    LabyrinthService.delete_labyrinth(id)
+    return "Labyrinth deleted"

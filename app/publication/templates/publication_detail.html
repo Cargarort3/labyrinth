@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ labyrinth.title }}{% endblock %}
+{% block title %}{{ publication.labyrinth.title }}{% endblock %}
 
 {% block content %}
-    <h2>{{ labyrinth.title }} from {{ labyrinth.user.username }}</h2>
-    <p><strong>Description:</strong> {{ labyrinth.description or "No description" }}</p>
-    {% set rows = labyrinth.matrix|length %}
-    {% set cols = labyrinth.matrix[0]|length %}
+    <h2>{{ publication.labyrinth.title }} from {{ publication.labyrinth.user.username }}</h2>
+    <p><strong>Description:</strong> {{ publication.labyrinth.description or "No description" }}</p>
+    {% set rows = publication.labyrinth.matrix|length %}
+    {% set cols = publication.labyrinth.matrix[0]|length %}
     {% if rows < 16 and cols < 29 %}
         {% set size_class = 'table-size-lg' %}
     {% elif rows < 23 and cols < 41 %}
@@ -28,12 +28,12 @@
                     <th>{{ i + 1 }}</th>
                     {% for j in range(cols) %}
                         {% set cell_class = '' %}
-                        {% if labyrinth.matrix[i][j] == 1 %}
+                        {% if publication.labyrinth.matrix[i][j] == 1 %}
                             {% set cell_class = 'wall' %}
                         {% endif %}
-                        {% if (i+1, j+1) == labyrinth.get_start() %}
+                        {% if (i+1, j+1) == publication.labyrinth.get_start() %}
                             {% set cell_class = 'start' %}
-                        {% elif (i+1, j+1) == labyrinth.get_end() %}
+                        {% elif (i+1, j+1) == publication.labyrinth.get_end() %}
                             {% set cell_class = 'end' %}
                         {% endif %}
                         <td class="{{ cell_class }}"></td>
@@ -44,14 +44,7 @@
     </div>
    
     <button id="print" onclick="printLabyrinth()">Print</button>
-    <button id="export" onclick="exportLabyrinth({{ labyrinth.matrix|tojson }}, {{ labyrinth.get_start()|tojson }}, {{ labyrinth.get_end()|tojson }})">Export</button>
-    {% if not labyrinth.is_published %}
-        <button id="edit" onclick="window.location.href='{{ url_for('labyrinth.edit_labyrinth', id=labyrinth.id) }}'">Edit</button>
-        <button id="delete" onclick="deleteLabyrinth('{{ labyrinth.id }}')">Delete</button>
-        <button id="publish" onclick="publishLabyrinth('{{ labyrinth.id }}')">Publish</button>
-    {% endif %}
-
-    <p id="error">{{ error }}</p>    
+    <button id="export" onclick="exportLabyrinth({{ publication.labyrinth.matrix|tojson }}, {{ publication.labyrinth.get_start()|tojson }}, {{ publication.labyrinth.get_end()|tojson }})">Export</button>
 {% endblock %}
 
 {% block scripts %}
@@ -101,40 +94,5 @@
             URL.revokeObjectURL(url);
         }
 
-        function deleteLabyrinth(id) {
-            if (!confirm("Are you sure you want to delete this labyrinth?")) return;
-
-            fetch(`/labyrinth/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "{{ url_for('labyrinth.my_labyrinths') }}";
-                }
-            })
-        }
-
-        function publishLabyrinth(id) {
-            if (!confirm("Are you sure you want to publish this labyrinth?")) return;
-
-            fetch(`/publication/create/${id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    response.json().then(data => {
-                        document.getElementById("error").innerText = data.error;
-                    });
-                } else if (response.redirected) {
-                    window.location.href = response.url;
-                }
-            });
-        }
     </script>
 {% endblock %}
