@@ -62,6 +62,7 @@
 
             const clone = original.cloneNode(true);
             clone.style.position = "fixed";
+            clone.style.top = "-10000px";
             document.body.appendChild(clone);
 
             clone.querySelector("tr").remove();
