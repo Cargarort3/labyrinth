@@ -16,7 +16,7 @@
     {% endif %}
 
     <div id="labyrinth-container">
-        <table class="labyrinth {{ size_class }} no-pointer">
+        <table class="labyrinth {{ size_class }}">
             <tr>
                 <th></th>
                 {% for col in range(1, cols + 1) %}
@@ -36,7 +36,7 @@
                         {% elif (i+1, j+1) == publication.labyrinth.get_end() %}
                             {% set cell_class = 'end' %}
                         {% endif %}
-                        <td class="{{ cell_class }}"></td>
+                        <td class="{{ cell_class }}" data-row="{{ i+1 }}" data-col="{{ j+1 }}" onmouseover="toggleCell(this)"></td>
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -45,11 +45,78 @@
    
     <button id="print" onclick="printLabyrinth()">Print</button>
     <button id="export" onclick="exportLabyrinth({{ publication.labyrinth.matrix|tojson }}, {{ publication.labyrinth.get_start()|tojson }}, {{ publication.labyrinth.get_end()|tojson }})">Export</button>
+    <button id="solve" onclick="solveLabyrinth({{ publication.id }})">Solve</button>
+    <button id="reset" onclick="resetTable()">Reset</button>
+    <button id="hide" onclick="hideResult()" style="display: none;">Hide</button>
+    <span id="result"></span>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
     <script>
+        let isMouseDown = false;
+        let changeType = true;
+        let path = ["{{ publication.labyrinth.start }}"];
+        document.addEventListener("mousedown", (e) => {
+            isMouseDown = true;
+            changeType = !e.target.classList.contains("path");
+            if (e.target.tagName === "TD") toggleCell(e.target);
+        });
+        document.addEventListener("mouseup", () => isMouseDown = false);
+
+        let directions = { "1,0": "🡇", "-1,0": "🡅", "0,1": "🡆", "0,-1": "🡄"};
+        function toggleCell(cell) {
+            if (document.getElementById("hide").style.display == "inline") return;
+            if (isMouseDown) {
+                if (cell.classList.contains("wall") || cell.classList.contains("start") || cell.classList.contains("end")) return;
+                if (cell.classList.contains("path") && !changeType) {
+                    if(path.at(-1) == cell.dataset.row + "," + cell.dataset.col) {
+                        cell.classList.remove("path");
+                        cell.innerText = ""
+                        path.pop()
+                    }
+                } else if (!cell.classList.contains("path") && changeType) {
+                    let movement = String(parseInt(cell.dataset.row) - path.at(-1).split(',')[0]) + "," + String(parseInt(cell.dataset.col) - path.at(-1).split(',')[1])
+                    if(movement in directions){
+                        cell.classList.add("path");
+                        cell.innerText = directions[movement];
+                        path.push(cell.dataset.row + "," + cell.dataset.col)
+                    }
+                }
+            }
+        }
+
+        function solveLabyrinth(id) {
+            fetch(`/publication/solve/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({  path: [...path, "{{ publication.labyrinth.end }}"] })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    document.getElementById("result").innerText = `${data.result}`;
+                    document.getElementById("hide").style.display = "inline";
+                }
+            });
+        }
+
+        function resetTable() {
+            const table = document.querySelector("#labyrinth-container table");
+            table.querySelectorAll("td").forEach(cell => {
+                cell.classList.remove("path");
+                cell.innerText = "";
+            });
+            path = ["{{ publication.labyrinth.start }}"];
+            document.getElementById("result").innerText = "";
+            document.getElementById("hide").style.display = "none";
+        }
+
+        function hideResult() {
+            document.getElementById("result").innerText = "";
+            document.getElementById("hide").style.display = "none";
+        }
+
         function printLabyrinth() {
             const original = document.getElementById("labyrinth-container");
 

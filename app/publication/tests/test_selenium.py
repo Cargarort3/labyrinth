@@ -1,6 +1,7 @@
 import unittest
 import pytest
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -10,7 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 @pytest.mark.selenium
-class AuthSeleniumTest(unittest.TestCase):
+class PublicationSeleniumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         options = Options()
@@ -22,7 +23,7 @@ class AuthSeleniumTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.quit()
 
-    def test_manage_labyrinth(self):
+    def test_publish_labyrinth(self):
         self.driver.get("http://localhost:5000")
         self.driver.find_element(By.LINK_TEXT, "Login").click()
         time.sleep(1)
@@ -36,7 +37,8 @@ class AuthSeleniumTest(unittest.TestCase):
         time.sleep(1)
         self.driver.find_element(By.LINK_TEXT, "Design labyrinth").click()
         time.sleep(1)
-        self.driver.find_element(By.ID, "generator").click()
+        json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "labyrinth.json"))
+        self.driver.find_element(By.ID, "import-json").send_keys(json_path)
         time.sleep(1)
 
         self.driver.find_element(By.ID, "title").send_keys("Test Labyrinth")
@@ -51,6 +53,22 @@ class AuthSeleniumTest(unittest.TestCase):
         time.sleep(1)
         Alert(self.driver).accept()
         time.sleep(1)
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="2"][data-col="1"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="2"][data-col="2"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="3"][data-col="2"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="4"][data-col="2"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="5"][data-col="2"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="5"][data-col="3"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="5"][data-col="4"]').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="5"][data-col="5"]').click()
+        time.sleep(1)
+        self.driver.find_element(By.ID, "solve").click()
+        time.sleep(1)
+        self.driver.find_element(By.ID, "hide").click()
+        time.sleep(1)
+        self.driver.find_element(By.ID, "reset").click()
+        time.sleep(1)
+
         self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
         time.sleep(1)
 
