@@ -130,3 +130,83 @@ def test_immutable_publication(client):
     response = client.delete('/labyrinth/1')
     assert response.status_code == 400
     assert b"You can't delete a published labyrinth" in response.data
+
+
+@pytest.mark.unit
+def test_solve_publication(client):
+    login(client)
+
+    data = {
+        "title": "Test Labyrinth",
+        "description": "Simple description",
+        "labyrinth": [
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 0, 0, 0],
+        ],
+        "start": [1, 1],
+        "end": [5, 5]
+    }
+
+    client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+    client.post('/publication/create/1')
+
+    data = {
+        "path": ["1,1", "2,1", "2,2", "3,2", "4,2", "5,2", "5,3", "5,4", "5,5"]
+    }
+    response = client.post('/publication/solve/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 200
+    assert response.is_json
+    assert response.get_json() == {"result": "Valid solution in 8 steps, best solution in 8 steps"}
+
+    data = {
+        "path": ["1,1", "2,1", "2,2", "2,3", "1,3", "1,4", "1,5", "2,5", "3,5", "4,5", "5,5"]
+    }
+    response = client.post('/publication/solve/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 200
+    assert response.is_json
+    assert response.get_json() == {"result": "Valid solution in 10 steps, best solution in 8 steps"}
+
+
+@pytest.mark.unit
+def test_solve_publication_wrong(client):
+    login(client)
+
+    data = {
+        "title": "Test Labyrinth",
+        "description": "Simple description",
+        "labyrinth": [
+            [0, 1, 0, 0, 0],
+            [0, 0, 0, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 1, 1, 0],
+            [1, 0, 0, 0, 0],
+        ],
+        "start": [1, 1],
+        "end": [5, 5]
+    }
+
+    client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
+    client.post('/publication/create/1')
+
+    data = {
+        "path": ["1,1", "2,1", "2,2", "3,2", "4,2", "5,2", "5,3", "5,4"]
+    }
+    response = client.post('/publication/solve/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 200
+    assert response.is_json
+    assert response.get_json() == {"result": "Solution not valid"}
+
+    data = {
+        "path": ["1,1", "2,1", "3,1", "3,2", "4,2", "5,2", "5,3", "5,4", "5,5"]
+    }
+    response = client.post('/publication/solve/1', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 200
+    assert response.is_json
+    assert response.get_json() == {"result": "Solution not valid"}
+
+    response = client.post('/publication/solve/2', data=json.dumps(data), content_type='application/json')
+    assert response.status_code == 404
+    assert b"Publication not found" in response.data
