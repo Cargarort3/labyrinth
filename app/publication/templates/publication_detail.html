@@ -5,6 +5,15 @@
 {% block content %}
     <h2>{{ publication.labyrinth.title }} from {{ publication.labyrinth.user.username }}</h2>
     <p><strong>Description:</strong> {{ publication.labyrinth.description or "No description" }}</p>
+    {% if current_user.is_authenticated %}
+        {% if current_user.id == publication.labyrinth.user.id %}
+            <p><strong>State:</strong> Owned</p>
+        {% elif current_user in publication.winners %}
+            <p><strong>State:</strong> Completed</p>
+        {% else %}
+            <p><strong>State:</strong> Uncompleted</p>
+        {% endif %}
+    {% endif %}
     {% set rows = publication.labyrinth.matrix|length %}
     {% set cols = publication.labyrinth.matrix[0]|length %}
     {% if rows < 16 and cols < 29 %}

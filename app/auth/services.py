@@ -12,3 +12,6 @@ class AuthService:
         if user and user.check_password(password):
             return user
         return None
+
+    def get_user_by_id(id):
+        return UserRepository.get_by_id(id)

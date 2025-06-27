@@ -11,3 +11,6 @@ class PublicationService:
 
     def create_publication(publication, labyrinth):
         return PublicationRepository.create(publication, labyrinth)
+
+    def add_publication_winner(id, winner, perfect):
+        return PublicationRepository.add_winner(id, winner, perfect)

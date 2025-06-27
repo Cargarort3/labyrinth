@@ -153,6 +153,8 @@ def test_solve_publication(client):
     client.post('/labyrinth/create', data=json.dumps(data), content_type='application/json')
     client.post('/publication/create/1')
 
+    client.get('/logout')
+    login(client, "example2")
     data = {
         "path": ["1,1", "2,1", "2,2", "3,2", "4,2", "5,2", "5,3", "5,4", "5,5"]
     }
@@ -161,6 +163,8 @@ def test_solve_publication(client):
     assert response.is_json
     assert response.get_json() == {"result": "Valid solution in 8 steps, best solution in 8 steps"}
 
+    client.get('/logout')
+    login(client, "example3")
     data = {
         "path": ["1,1", "2,1", "2,2", "2,3", "1,3", "1,4", "1,5", "2,5", "3,5", "4,5", "5,5"]
     }

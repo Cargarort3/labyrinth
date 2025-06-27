@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from .models import Publication
 from .services import PublicationService
 from app.labyrinth.services import LabyrinthService
+from app.auth.services import AuthService
 from app.labyrinth.algorithms import bfs, matrix_to_graph
 
 
@@ -65,6 +66,10 @@ def solve_publication(id):
     con3 = all(adjacent(c1, c2) for c1, c2 in zip(path, path[1:]))
 
     if (con1 and con2 and con3):
+        if (current_user.is_authenticated and current_user.id != publication.labyrinth.user.id and current_user not in publication.winners):
+            winner = AuthService.get_user_by_id(current_user.id)
+            PublicationService.add_publication_winner(id, winner, publication.min_movements == len(path)-1)
+
         return jsonify({"result": "Valid solution in {} steps, best solution in {} steps".format(len(path)-1, publication.min_movements)})
     else:
         return jsonify({"result": "Solution not valid"})
