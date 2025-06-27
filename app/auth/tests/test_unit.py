@@ -38,6 +38,10 @@ def test_auth_success(client):
     assert response.status_code == 200
     assert b"Logout" in response.data
 
+    response = client.get('/profile')
+    assert response.status_code == 200
+    assert b"My profile" in response.data
+
     response = client.get('/logout', follow_redirects=True)
     assert response.status_code == 200
     assert not current_user.is_authenticated

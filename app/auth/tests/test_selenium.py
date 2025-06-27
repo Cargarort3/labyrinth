@@ -40,5 +40,8 @@ class AuthSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.TAG_NAME, "form").submit()
         time.sleep(1)
 
+        self.driver.find_element(By.LINK_TEXT, "My profile").click()
+        time.sleep(1)
+
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         time.sleep(1)
