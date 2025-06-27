@@ -53,6 +53,30 @@ class PublicationSeleniumTest(unittest.TestCase):
         time.sleep(1)
         Alert(self.driver).accept()
         time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "My profile").click()
+        time.sleep(1)
+
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "Login").click()
+        time.sleep(1)
+        self.driver.find_element(By.NAME, "username").send_keys("user2")
+        self.driver.find_element(By.NAME, "password").send_keys("complexpass")
+        self.driver.find_element(By.TAG_NAME, "form").submit()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "My profile").click()
+        time.sleep(1)
+
+        self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
+        time.sleep(1)
+        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[-1].click()
+        time.sleep(1)
+
+        self.driver.find_element(By.ID, "print").click()
+        time.sleep(1)
+        self.driver.find_element(By.ID, "export").click()
+        time.sleep(1)
+
         self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="2"][data-col="1"]').click()
         self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="2"][data-col="2"]').click()
         self.driver.find_element(By.CSS_SELECTOR, 'td[data-row="3"][data-col="2"]').click()
@@ -69,7 +93,7 @@ class PublicationSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.ID, "reset").click()
         time.sleep(1)
 
-        self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
+        self.driver.find_element(By.LINK_TEXT, "My profile").click()
         time.sleep(1)
 
         self.driver.find_element(By.LINK_TEXT, "Logout").click()

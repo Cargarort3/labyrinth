@@ -17,6 +17,15 @@
                             <strong>Start:</strong> {{ pub.labyrinth.start }}
                             <strong>End:</strong> {{ pub.labyrinth.end }}
                         </p>
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.id == pub.labyrinth.user.id %}
+                                <p><strong>State:</strong> Owned</p>
+                            {% elif current_user in pub.winners %}
+                                <p><strong>State:</strong> Completed</p>
+                            {% else %}
+                                <p><strong>State:</strong> Uncompleted</p>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </a>
             {% endfor %}

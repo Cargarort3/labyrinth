@@ -9,3 +9,11 @@ class Publication(db.Model):
 
     labyrinth_id = db.Column(db.Integer, db.ForeignKey('labyrinth.id'), nullable=False, unique=True)
     labyrinth = db.relationship('Labyrinth', lazy=True, uselist=False)
+    winners = db.relationship('User', secondary='publication_winner')
+
+
+publication_winner = db.Table(
+    'publication_winner',
+    db.Column('publication_id', db.Integer, db.ForeignKey('publication.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)

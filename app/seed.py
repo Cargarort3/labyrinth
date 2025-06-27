@@ -1,5 +1,5 @@
 from app.database import db
-from app.auth.models import User
+from app.auth.models import User, Statistics
 from app.labyrinth.models import Labyrinth
 from app import create_app
 
@@ -10,11 +10,13 @@ with app.app_context():
     db.create_all()
 
     # Users
-    user1 = User(username="user1")
+    statistics1 = Statistics(publications=0, victories=0, precise_victories=0)
+    user1 = User(username="user1", statistics=statistics1)
     user1.set_password("complexpass")
-    user2 = User(username="user2")
+    statistics2 = Statistics(publications=0, victories=0, precise_victories=0)
+    user2 = User(username="user2", statistics=statistics2)
     user2.set_password("complexpass")
-    db.session.add_all([user1, user2])
+    db.session.add_all([statistics1, user1, statistics2, user2,])
 
     # Labyrinths
     m = [[0, 1, 0, 0, 0], [0, 0, 0, 1, 0], [1, 0, 1, 1, 0], [1, 0, 1, 1, 0], [1, 0, 0, 0, 0]]
