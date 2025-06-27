@@ -47,3 +47,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
+
+
+@auth.route('/profile', methods=['GET'])
+@login_required
+def get_my_profile():
+    return render_template('my_profile.html')

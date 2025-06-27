@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}My profile{% endblock %}
+
+{% block content %}
+    <h2>My profile</h2>
+    <p><strong>Username:</strong> {{ current_user.username }}</p>
+    <p><strong>Publications:</strong> {{ current_user.statistics.publications }}</p>
+    <p><strong>Victories:</strong> {{ current_user.statistics.victories }}</p>
+    {% if current_user.statistics.victories > 0 %}
+        <p><strong>Perfect win percentage:</strong> {{ ((current_user.statistics.precise_victories / current_user.statistics.victories)*100)|round(2) }} %</p>
+    {% endif %}
+{% endblock %}
