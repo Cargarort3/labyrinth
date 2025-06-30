@@ -10,4 +10,26 @@
     {% if current_user.statistics.victories > 0 %}
         <p><strong>Perfect win percentage:</strong> {{ ((current_user.statistics.precise_victories / current_user.statistics.victories)*100)|round(2) }} %</p>
     {% endif %}
+
+    <br>
+    <h3>My publicated labyrinths</h2>
+    {% if publications %}
+        <div class="labyrinth-card-container">
+            {% for pub in publications %}
+                <a href="{{ url_for('publication.get_publication', id=pub.id) }}" class="labyrinth-card-link">
+                    <div class="labyrinth-card">
+                        <strong>{{ pub.labyrinth.title }}</strong>
+                        <p><strong>Description:</strong> {{ pub.labyrinth.description or "No description" }}</p>
+                        <p><strong>Size:</strong> {{ pub.labyrinth.matrix|length }} x {{ pub.labyrinth.matrix[0]|length }}</p>
+                        <p>
+                            <strong>Start:</strong> {{ pub.labyrinth.start }}
+                            <strong>End:</strong> {{ pub.labyrinth.end }}
+                        </p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No publications found.</p>
+    {% endif %}
 {% endblock %}

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from .services import AuthService
+from app.publication.services import PublicationService
 
 auth = Blueprint("auth", __name__, template_folder="templates")
 
@@ -52,4 +53,16 @@ def logout():
 @auth.route('/profile', methods=['GET'])
 @login_required
 def get_my_profile():
-    return render_template('my_profile.html')
+    publications = PublicationService.get_user_publications(current_user.id)
+    return render_template('my_profile.html', publications=publications)
+
+
+@auth.route('/profile/<int:id>', methods=['GET'])
+def get_user_profile(id):
+    user = AuthService.get_user_by_id(id)
+    if not user:
+        return "User not found", 404
+    if user == current_user:
+        return render_template('my_profile.html')
+    publications = PublicationService.get_user_publications(user.id)
+    return render_template('user_profile.html', user=user, publications=publications)

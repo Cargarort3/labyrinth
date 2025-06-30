@@ -3,7 +3,12 @@
 {% block title %}{{ publication.labyrinth.title }}{% endblock %}
 
 {% block content %}
-    <h2>{{ publication.labyrinth.title }} from {{ publication.labyrinth.user.username }}</h2>
+    <h2>
+        {{ publication.labyrinth.title }} from 
+        <a href="{{ url_for('auth.get_user_profile', id=publication.labyrinth.user.id) }}">
+            {{ publication.labyrinth.user.username }}
+        </a>
+    </h2>
     <p><strong>Description:</strong> {{ publication.labyrinth.description or "No description" }}</p>
     {% if current_user.is_authenticated %}
         {% if current_user.id == publication.labyrinth.user.id %}

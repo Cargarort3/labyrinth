@@ -42,10 +42,18 @@ def test_auth_success(client):
     assert response.status_code == 200
     assert b"My profile" in response.data
 
+    response = client.get('/profile/1')
+    assert response.status_code == 200
+    assert b"My profile" in response.data
+
     response = client.get('/logout', follow_redirects=True)
     assert response.status_code == 200
     assert not current_user.is_authenticated
     assert b"Login" in response.data
+
+    response = client.get('/profile/1')
+    assert response.status_code == 200
+    assert b"example's profile" in response.data
 
 
 @pytest.mark.unit
@@ -99,3 +107,10 @@ def test_register_wrong(client):
     }, follow_redirects=True)
     assert response.status_code == 400
     assert b"Username or password doesn't meet the required length." in response.data
+
+
+@pytest.mark.unit
+def test_profile_not_found(client):
+    response = client.get('/profile/1')
+    assert response.status_code == 404
+    assert b"User not found" in response.data
