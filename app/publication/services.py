@@ -9,6 +9,9 @@ class PublicationService:
     def get_publication_by_id(id):
         return PublicationRepository.get_by_id(id)
 
+    def get_user_publications(user_id):
+        return PublicationRepository.get_by_userid(user_id)
+
     def create_publication(publication, labyrinth):
         return PublicationRepository.create(publication, labyrinth)
 

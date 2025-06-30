@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s profile{% endblock %}
+
+{% block content %}
+    <h2>{{ user.username }}'s profile</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Publications:</strong> {{ user.statistics.publications }}</p>
+    <p><strong>Victories:</strong> {{ user.statistics.victories }}</p>
+    {% if user.statistics.victories > 0 %}
+        <p><strong>Perfect win percentage:</strong> {{ ((user.statistics.precise_victories / user.statistics.victories)*100)|round(2) }} %</p>
+    {% endif %}
+
+    <br>
+    <h2>Publicated labyrinths</h2>
+    {% if publications %}
+        <div class="labyrinth-card-container">
+            {% for pub in publications %}
+                <a href="{{ url_for('publication.get_publication', id=pub.id) }}" class="labyrinth-card-link">
+                    <div class="labyrinth-card">
+                        <strong>{{ pub.labyrinth.title }}</strong>
+                        <p><strong>Description:</strong> {{ pub.labyrinth.description or "No description" }}</p>
+                        <p><strong>Size:</strong> {{ pub.labyrinth.matrix|length }} x {{ pub.labyrinth.matrix[0]|length }}</p>
+                        <p>
+                            <strong>Start:</strong> {{ pub.labyrinth.start }}
+                            <strong>End:</strong> {{ pub.labyrinth.end }}
+                        </p>
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.id == pub.labyrinth.user.id %}
+                                <p><strong>State:</strong> Owned</p>
+                            {% elif current_user in pub.winners %}
+                                <p><strong>State:</strong> Completed</p>
+                            {% else %}
+                                <p><strong>State:</strong> Uncompleted</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No publications found.</p>
+    {% endif %}
+{% endblock %}

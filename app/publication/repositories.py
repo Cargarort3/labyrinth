@@ -1,5 +1,6 @@
 from ..database import db
 from .models import Publication
+from app.labyrinth.models import Labyrinth
 
 
 class PublicationRepository:
@@ -8,6 +9,9 @@ class PublicationRepository:
 
     def get_by_id(id):
         return Publication.query.filter_by(id=id).first()
+
+    def get_by_userid(user_id):
+        return (Publication.query.join(Labyrinth).filter(Labyrinth.user_id == user_id).all())
 
     def create(publication, labyrinth):
         labyrinth.is_published = True
