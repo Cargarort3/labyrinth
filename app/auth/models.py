@@ -8,16 +8,23 @@ bcrypt = Bcrypt()
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
 
     labyrinths = db.relationship('Labyrinth', backref='user', lazy=True)
     statistics = db.relationship('Statistics', lazy=True, uselist=False)
 
+
+class Password(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hash = db.Column(db.String(255), nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    user = db.relationship('User', lazy=True, uselist=False)
+
     def set_password(self, password):
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        return bcrypt.check_password_hash(self.password, password)
+        return bcrypt.check_password_hash(self.hash, password)
 
 
 class Statistics(db.Model):

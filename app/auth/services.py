@@ -9,8 +9,10 @@ class AuthService:
 
     def authenticate_user(username, password):
         user = UserRepository.get_by_username(username)
-        if user and user.check_password(password):
-            return user
+        if user:
+            passw = UserRepository.get_password_by_userid(user.id)
+            if passw.check_password(password):
+                return user
         return None
 
     def get_user_by_id(id):
