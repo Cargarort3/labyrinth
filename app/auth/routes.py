@@ -5,6 +5,9 @@ from app.publication.services import PublicationService
 
 auth = Blueprint("auth", __name__, template_folder="templates")
 
+publicationService = PublicationService()
+authService = AuthService()
+
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
@@ -17,7 +20,7 @@ def register():
         if not (3 <= len(username) <= 20) or not (8 <= len(password) <= 20):
             return "Username or password doesn't meet the required length.", 400
 
-        user = AuthService.register_user(username, password)
+        user = authService.register_user(username, password)
         if user:
             return redirect(url_for('auth.login'))
         return render_template("register.html", error="Username already taken"), 409
@@ -34,7 +37,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        user = AuthService.authenticate_user(username, password)
+        user = authService.authenticate_user(username, password)
         if user:
             login_user(user)
             return redirect(url_for('main.index'))
@@ -53,16 +56,16 @@ def logout():
 @auth.route('/profile', methods=['GET'])
 @login_required
 def get_my_profile():
-    publications = PublicationService.get_user_publications(current_user.id)
+    publications = publicationService.get_user_publications(current_user.id)
     return render_template('my_profile.html', publications=publications)
 
 
 @auth.route('/profile/<int:id>', methods=['GET'])
 def get_user_profile(id):
-    user = AuthService.get_user_by_id(id)
+    user = authService.get_user_by_id(id)
     if not user:
         return "User not found", 404
     if user == current_user:
         return render_template('my_profile.html')
-    publications = PublicationService.get_user_publications(user.id)
+    publications = publicationService.get_user_publications(user.id)
     return render_template('user_profile.html', user=user, publications=publications)

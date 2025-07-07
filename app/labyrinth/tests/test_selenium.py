@@ -12,7 +12,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 @pytest.mark.selenium
-class AuthSeleniumTest(unittest.TestCase):
+class LabyrinthSeleniumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         options = Options()
