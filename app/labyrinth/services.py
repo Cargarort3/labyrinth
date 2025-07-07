@@ -2,18 +2,20 @@ from .repositories import LabyrinthRepository
 
 
 class LabyrinthService:
+    def __init__(self):
+        self.labyrinthRepository = LabyrinthRepository()
 
-    def get_labyrinth_by_id(id):
-        return LabyrinthRepository.get_by_id(id)
+    def get_labyrinth_by_id(self, id):
+        return self.labyrinthRepository.get_by_id(id)
 
-    def get_my_labyrinths(user_id):
-        return LabyrinthRepository.get_by_userid(user_id)
+    def get_my_labyrinths(self, user_id):
+        return self.labyrinthRepository.get_by_userid(user_id)
 
-    def create_labyrinth(labyrinth):
-        return LabyrinthRepository.create(labyrinth)
+    def create_labyrinth(self, labyrinth):
+        return self.labyrinthRepository.create(labyrinth)
 
-    def update_labyrinth(labyrinth):
-        return LabyrinthRepository.update(labyrinth)
+    def update_labyrinth(self, labyrinth):
+        return self.labyrinthRepository.update(labyrinth)
 
-    def delete_labyrinth(id):
-        return LabyrinthRepository.delete(id)
+    def delete_labyrinth(self, id):
+        return self.labyrinthRepository.delete(id)

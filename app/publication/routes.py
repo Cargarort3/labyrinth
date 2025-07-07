@@ -9,16 +9,20 @@ from app.labyrinth.algorithms import bfs, matrix_to_graph
 
 publication = Blueprint("publication", __name__, template_folder="templates", url_prefix="/publication")
 
+publicationService = PublicationService()
+labyrinthService = LabyrinthService()
+authService = AuthService()
+
 
 @publication.route('/', methods=['GET'])
 def get_all_publications():
-    publications = PublicationService.get_all_publications()
+    publications = publicationService.get_all_publications()
     return render_template('all_publications.html', publications=publications)
 
 
 @publication.route('/<int:id>', methods=['GET'])
 def get_publication(id):
-    publication = PublicationService.get_publication_by_id(id)
+    publication = publicationService.get_publication_by_id(id)
     if not publication:
         return "Publication not found", 404
     return render_template('publication_detail.html', publication=publication)
@@ -27,7 +31,7 @@ def get_publication(id):
 @publication.route('/create/<int:id>', methods=['POST'])
 @login_required
 def publish_labyrinth(id):
-    labyrinth = LabyrinthService.get_labyrinth_by_id(id)
+    labyrinth = labyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
     if labyrinth.user.id != current_user.id:
@@ -39,7 +43,7 @@ def publish_labyrinth(id):
         return jsonify({"error": "Your labyrinth has no solution."}), 400
 
     publication = Publication(min_movements=len(solution)-1, labyrinth_id=id)
-    publication = PublicationService.create_publication(publication, labyrinth)
+    publication = publicationService.create_publication(publication, labyrinth)
 
     return redirect(url_for('publication.get_publication', id=publication.id))
 
@@ -49,7 +53,7 @@ def solve_publication(id):
     data = request.json
     path = data["path"]
 
-    publication = PublicationService.get_publication_by_id(id)
+    publication = publicationService.get_publication_by_id(id)
     if not publication:
         return "Publication not found", 404
 
@@ -67,8 +71,8 @@ def solve_publication(id):
 
     if (con1 and con2 and con3):
         if (current_user.is_authenticated and current_user.id != publication.labyrinth.user.id and current_user not in publication.winners):
-            winner = AuthService.get_user_by_id(current_user.id)
-            PublicationService.add_publication_winner(id, winner, publication.min_movements == len(path)-1)
+            winner = authService.get_user_by_id(current_user.id)
+            publicationService.add_publication_winner(id, winner, publication.min_movements == len(path)-1)
 
         return jsonify({"result": "Valid solution in {} steps, best solution in {} steps".format(len(path)-1, publication.min_movements)})
     else:

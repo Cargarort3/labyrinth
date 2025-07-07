@@ -2,17 +2,17 @@ from ..database import db
 from .models import User, Password, Statistics
 
 
-class UserRepository:
-    def get_by_username(username):
+class AuthRepository:
+    def get_by_username(self, username):
         return User.query.filter_by(username=username).first()
 
-    def get_by_id(id):
+    def get_by_id(self, id):
         return User.query.filter_by(id=id).first()
 
-    def get_password_by_userid(user_id):
+    def get_password_by_userid(self, user_id):
         return Password.query.filter_by(user_id=user_id).first()
 
-    def create(username, password):
+    def create(self, username, password):
         new_statistics = Statistics(publications=0, victories=0, precise_victories=0)
         new_user = User(username=username, statistics=new_statistics)
         new_password = Password(user=new_user)

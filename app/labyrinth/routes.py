@@ -7,6 +7,8 @@ from .algorithms import matrix_to_graph, bfs, dfs, random_walk, path_movements, 
 
 labyrinth = Blueprint("labyrinth", __name__, template_folder="templates", url_prefix="/labyrinth")
 
+labyrinthService = LabyrinthService()
+
 
 @labyrinth.route('/solve', methods=['POST'])
 def solve_labyrinth():
@@ -65,7 +67,7 @@ def create_labyrinth():
         labyrinth.set_start(start)
         labyrinth.set_end(end)
 
-        labyrinth = LabyrinthService.create_labyrinth(labyrinth)
+        labyrinth = labyrinthService.create_labyrinth(labyrinth)
 
         return redirect(url_for('labyrinth.my_labyrinths'))
 
@@ -75,14 +77,14 @@ def create_labyrinth():
 @labyrinth.route('/', methods=['GET'])
 @login_required
 def my_labyrinths():
-    labyrinths = LabyrinthService.get_my_labyrinths(current_user.id)
+    labyrinths = labyrinthService.get_my_labyrinths(current_user.id)
     return render_template('my_labyrinths.html', labyrinths=labyrinths)
 
 
 @labyrinth.route('/<int:id>', methods=['GET'])
 @login_required
 def get_labyrinth(id):
-    labyrinth = LabyrinthService.get_labyrinth_by_id(id)
+    labyrinth = labyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
     if labyrinth.user.id != current_user.id:
@@ -93,7 +95,7 @@ def get_labyrinth(id):
 @labyrinth.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_labyrinth(id):
-    labyrinth = LabyrinthService.get_labyrinth_by_id(id)
+    labyrinth = labyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
     if labyrinth.user.id != current_user.id:
@@ -121,7 +123,7 @@ def edit_labyrinth(id):
         labyrinth.set_start(start)
         labyrinth.set_end(end)
 
-        labyrinth = LabyrinthService.update_labyrinth(labyrinth)
+        labyrinth = labyrinthService.update_labyrinth(labyrinth)
 
         return redirect(url_for('labyrinth.get_labyrinth', id=labyrinth.id))
 
@@ -131,7 +133,7 @@ def edit_labyrinth(id):
 @labyrinth.route('/<int:id>', methods=['DELETE'])
 @login_required
 def delete_labyrinth(id):
-    labyrinth = LabyrinthService.get_labyrinth_by_id(id)
+    labyrinth = labyrinthService.get_labyrinth_by_id(id)
     if not labyrinth:
         return "Labyrinth not found", 404
     if labyrinth.user.id != current_user.id:
@@ -139,5 +141,5 @@ def delete_labyrinth(id):
     if labyrinth.is_published:
         return "You can't delete a published labyrinth", 400
 
-    LabyrinthService.delete_labyrinth(id)
+    labyrinthService.delete_labyrinth(id)
     return "Labyrinth deleted"

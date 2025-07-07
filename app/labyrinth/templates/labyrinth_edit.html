@@ -108,17 +108,17 @@
             }
 
             let html = `<table class="labyrinth ${sizeClass}">`;
-            html += "<tr><th></th>";
+            html += '<tr><th id="0,0"></th>';
             for (let j = 1; j <= cols; j++) {
-                html += `<th>${j}</th>`;
+                html += `<th id="0,${j}">${j}</th>`;
             }
             html += "</tr>";
             for (let i = 0; i < rows; i++) {
-                html += `<tr><th>${i + 1}</th>`;
+                html += `<tr><th id="${i + 1},0">${i + 1}</th>`;
                 for (let j = 0; j < cols; j++) {
                     const value = newMatrix[i][j];
                     const className = value === 1 ? 'wall' : '';
-                    html += `<td class="${className}" onmouseover="toggleCell(this)"></td>`;
+                    html += `<td id="${i + 1},${j + 1}" class="${className}" onmouseover="toggleCell(this)" onfocus="toggleCell(this)" tabindex="0"></td>`;
                 }
                 html += "</tr>";
             }

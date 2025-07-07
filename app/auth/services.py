@@ -1,19 +1,22 @@
-from .repositories import UserRepository
+from .repositories import AuthRepository
 
 
 class AuthService:
-    def register_user(username, password):
-        if UserRepository.get_by_username(username):
-            return None
-        return UserRepository.create(username, password)
+    def __init__(self):
+        self.authRepository = AuthRepository()
 
-    def authenticate_user(username, password):
-        user = UserRepository.get_by_username(username)
+    def register_user(self, username, password):
+        if self.authRepository.get_by_username(username):
+            return None
+        return self.authRepository.create(username, password)
+
+    def authenticate_user(self, username, password):
+        user = self.authRepository.get_by_username(username)
         if user:
-            passw = UserRepository.get_password_by_userid(user.id)
+            passw = self.authRepository.get_password_by_userid(user.id)
             if passw.check_password(password):
                 return user
         return None
 
-    def get_user_by_id(id):
-        return UserRepository.get_by_id(id)
+    def get_user_by_id(self, id):
+        return self.authRepository.get_by_id(id)
