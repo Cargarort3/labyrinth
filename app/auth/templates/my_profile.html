@@ -8,11 +8,11 @@
     <p><strong>Publications:</strong> {{ current_user.statistics.publications }}</p>
     <p><strong>Victories:</strong> {{ current_user.statistics.victories }}</p>
     {% if current_user.statistics.victories > 0 %}
-        <p><strong>Perfect win percentage:</strong> {{ ((current_user.statistics.precise_victories / current_user.statistics.victories)*100)|round(2) }} %</p>
+        <p><strong>Perfect win rate:</strong> {{ ((current_user.statistics.precise_victories / current_user.statistics.victories)*100)|round(2) }} %</p>
     {% endif %}
 
     <br>
-    <h3>My publicated labyrinths</h2>
+    <h3>My published labyrinths</h2>
     {% if publications %}
         <div class="labyrinth-card-container">
             {% for pub in publications %}

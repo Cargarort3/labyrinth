@@ -20,7 +20,7 @@ class TestPublication:
     def test_publications_screen(self, client):
         response = client.get('/publication/')
         assert response.status_code == 200
-        assert b"All publicated labyrinths" in response.data
+        assert b"All published labyrinths" in response.data
 
         response = client.get('/publication/1')
         assert response.status_code == 404
