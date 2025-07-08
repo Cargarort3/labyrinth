@@ -1,4 +1,5 @@
 from .repositories import AuthRepository
+import math
 
 
 class AuthService:
@@ -20,3 +21,14 @@ class AuthService:
 
     def get_user_by_id(self, id):
         return self.authRepository.get_by_id(id)
+
+    def get_best_users(self):
+        users = self.authRepository.get_users_with_stats()
+
+        def compute_score(user):
+            stats = user.statistics
+            perfect_win_rate = stats.precise_victories / stats.victories
+            return perfect_win_rate * math.log(stats.victories + 1)
+
+        ranked = sorted(users, key=compute_score, reverse=True)
+        return ranked[:10]

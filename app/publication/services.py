@@ -19,3 +19,8 @@ class PublicationService:
 
     def add_publication_winner(self, id, winner, perfect):
         return self.publicationRepository.add_winner(id, winner, perfect)
+
+    def get_most_popular_publications(self):
+        publications = self.publicationRepository.get_all()
+        publications.sort(key=lambda p: len(p.winners), reverse=True)
+        return publications[:10]
