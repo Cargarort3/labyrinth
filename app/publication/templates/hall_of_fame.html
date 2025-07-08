@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Hall of Fame{% endblock %}
+
+{% block content %}
+    <h2>🏆 Hall of Fame</h2>
+
+    <h3>👑 Top 10 Players</h3>
+    {% if users %}
+        <div class="player-card-container">
+            {% for user in users %}
+                <a href="{{ url_for('auth.get_user_profile', id=user.id) }}" class="player-card-link">
+                    <div class="player-card">
+                        <div class="player-rank">#{{ loop.index }}</div>
+                        <div class="player-info">
+                            <strong>{{ user.username }}</strong>
+                            <p>🏅 Victories: {{ user.statistics.victories }}</p>
+                            <p>🎯 Precise wins: {{ user.statistics.precise_victories }}</p>
+                            <p>
+                                🧠 Perfect win rate:
+                                {% if user.statistics.victories > 0 %}
+                                    {{ (100 * user.statistics.precise_victories / user.statistics.victories)|round(2) }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No top players found.</p>
+    {% endif %}
+
+    <h3>🔥 Most Popular Publications</h3>
+    {% if publications %}
+        <div class="labyrinth-card-container">
+            {% for pub in publications %}
+                <a href="{{ url_for('publication.get_publication', id=pub.id) }}" class="labyrinth-card-link">
+                    <div class="labyrinth-card">
+                        <div class="lab-rank">#{{ loop.index }}</div>
+                        <strong>{{ pub.labyrinth.title }}</strong>
+                        <p><strong>Description:</strong> {{ pub.labyrinth.description or "No description" }}</p>
+                        <p><strong>Size:</strong> {{ pub.labyrinth.matrix|length }} x {{ pub.labyrinth.matrix[0]|length }}</p>
+                        <p><strong>Start:</strong> {{ pub.labyrinth.start }}</p>
+                        <p><strong>End:</strong> {{ pub.labyrinth.end }}</p>
+                        <p><strong>🏁 Winners:</strong> {{ pub.winners|length }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No popular publications found.</p>
+    {% endif %}
+{% endblock %}
