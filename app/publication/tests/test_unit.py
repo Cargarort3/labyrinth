@@ -26,6 +26,10 @@ class TestPublication:
         assert response.status_code == 404
         assert b"Publication not found" in response.data
 
+        response = client.get('publication/fame')
+        assert response.status_code == 200
+        assert b"Hall of fame" in response.data
+
     def test_publish_labyrinth(self, client):
         self.login(client)
 

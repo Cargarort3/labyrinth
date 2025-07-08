@@ -50,5 +50,5 @@ class AuthSeleniumTest(unittest.TestCase):
         time.sleep(1)
         self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[0].click()
         time.sleep(1)
-        self.driver.find_element(By.LINK_TEXT, "user2").click()
+        self.driver.find_element(By.LINK_TEXT, "user1").click()
         time.sleep(1)
