@@ -8,7 +8,7 @@
     <p><strong>Publications:</strong> {{ user.statistics.publications }}</p>
     <p><strong>Victories:</strong> {{ user.statistics.victories }}</p>
     {% if user.statistics.victories > 0 %}
-        <p><strong>Perfect win percentage:</strong> {{ ((user.statistics.precise_victories / user.statistics.victories)*100)|round(2) }} %</p>
+        <p><strong>Perfect win rate:</strong> {{ ((user.statistics.precise_victories / user.statistics.victories)*100)|round(2) }} %</p>
     {% endif %}
 
     <br>

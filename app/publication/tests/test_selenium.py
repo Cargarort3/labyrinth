@@ -98,3 +98,6 @@ class PublicationSeleniumTest(unittest.TestCase):
 
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         time.sleep(1)
+
+        self.driver.find_element(By.LINK_TEXT, "Hall of fame").click()
+        time.sleep(1)

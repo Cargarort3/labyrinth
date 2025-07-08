@@ -77,3 +77,10 @@ def solve_publication(id):
         return jsonify({"result": "Valid solution in {} steps, best solution in {} steps".format(len(path)-1, publication.min_movements)})
     else:
         return jsonify({"result": "Solution not valid"})
+
+
+@publication.route('/fame', methods=['GET'])
+def get_hall_of_fame():
+    users = authService.get_best_users()
+    publications = publicationService.get_most_popular_publications()
+    return render_template('hall_of_fame.html', users=users, publications=publications)

@@ -20,3 +20,11 @@ class AuthRepository:
         db.session.add_all([new_statistics, new_user, new_password])
         db.session.commit()
         return new_user
+
+    def get_users_with_stats(self):
+        return (
+            db.session.query(User)
+            .join(Statistics)
+            .filter(Statistics.victories > 0)
+            .all()
+        )
