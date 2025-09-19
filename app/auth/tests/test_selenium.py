@@ -52,3 +52,8 @@ class AuthSeleniumTest(unittest.TestCase):
         time.sleep(1)
         self.driver.find_element(By.XPATH, "//h2/a").click()
         time.sleep(1)
+
+        self.driver.find_element(By.LINK_TEXT, "Next »").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "« Prev").click()
+        time.sleep(1)
