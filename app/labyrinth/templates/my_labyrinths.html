@@ -13,14 +13,21 @@
                         <strong>{{ lab.title }}</strong>
                         <p><strong>Description:</strong> {{ lab.description or "No description" }}</p>
                         <p><strong>Size:</strong> {{ lab.matrix|length }} x {{ lab.matrix[0]|length }}</p>
-                        <p>
-                            <strong>Start:</strong> {{ lab.start }}
-                            <strong>End:</strong> {{ lab.end }}
-                        </p>
                         <p><strong>Published:</strong> {{ 'Yes' if lab.is_published else 'No' }}</p>
                     </div>
                 </a>
             {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('labyrinth.my_labyrinths', page=page-1) }}">« Prev</a>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('labyrinth.my_labyrinths', page=page+1) }}">Next »</a>
+            {% endif %}
         </div>
     {% else %}
         <p>No labyrinths found.</p>

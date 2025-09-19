@@ -35,6 +35,11 @@ class PublicationSeleniumTest(unittest.TestCase):
 
         self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
         time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "Next »").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "« Prev").click()
+        time.sleep(1)
+
         self.driver.find_element(By.LINK_TEXT, "Design labyrinth").click()
         time.sleep(1)
         json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "labyrinth.json"))
@@ -46,7 +51,7 @@ class PublicationSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.ID, "create").click()
         time.sleep(1)
 
-        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[-1].click()
+        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[0].click()
         time.sleep(1)
 
         self.driver.find_element(By.ID, "publish").click()
@@ -54,6 +59,10 @@ class PublicationSeleniumTest(unittest.TestCase):
         Alert(self.driver).accept()
         time.sleep(1)
         self.driver.find_element(By.LINK_TEXT, "My profile").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "Next »").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "« Prev").click()
         time.sleep(1)
 
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
@@ -69,7 +78,7 @@ class PublicationSeleniumTest(unittest.TestCase):
 
         self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
         time.sleep(1)
-        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[-1].click()
+        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[0].click()
         time.sleep(1)
 
         self.driver.find_element(By.ID, "print").click()

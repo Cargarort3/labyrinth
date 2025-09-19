@@ -56,8 +56,19 @@ def logout():
 @auth.route('/profile', methods=['GET'])
 @login_required
 def get_my_profile():
-    publications = publicationService.get_user_publications(current_user.id)
-    return render_template('my_profile.html', publications=publications)
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    publications, total = publicationService.get_user_publications_paginated(current_user.id, page, per_page)
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'my_profile.html',
+        user=current_user,
+        publications=publications,
+        page=page,
+        total_pages=total_pages
+    )
 
 
 @auth.route('/profile/<int:id>', methods=['GET'])
@@ -66,6 +77,18 @@ def get_user_profile(id):
     if not user:
         return "User not found", 404
     if user == current_user:
-        return render_template('my_profile.html')
-    publications = publicationService.get_user_publications(user.id)
-    return render_template('user_profile.html', user=user, publications=publications)
+        return get_my_profile()
+
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    publications, total = publicationService.get_user_publications_paginated(user.id, page, per_page)
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'user_profile.html',
+        user=user,
+        publications=publications,
+        page=page,
+        total_pages=total_pages
+    )

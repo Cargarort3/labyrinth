@@ -33,8 +33,8 @@ with app.app_context():
         [1, 0, 0, 0, 0]
     ]
 
-    publication_count = 20
-    author_cycle = users[:5]
+    publication_count = 80
+    author_cycle = users[:10]
 
     for i in range(publication_count):
         author = author_cycle[i % len(author_cycle)]

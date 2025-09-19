@@ -21,10 +21,8 @@
                         <strong>{{ pub.labyrinth.title }}</strong>
                         <p><strong>Description:</strong> {{ pub.labyrinth.description or "No description" }}</p>
                         <p><strong>Size:</strong> {{ pub.labyrinth.matrix|length }} x {{ pub.labyrinth.matrix[0]|length }}</p>
-                        <p>
-                            <strong>Start:</strong> {{ pub.labyrinth.start }}
-                            <strong>End:</strong> {{ pub.labyrinth.end }}
-                        </p>
+                        <p><strong>Minimal movements:</strong> {{ pub.min_movements }}</p>
+                        <p><strong>Winners:</strong> {{ pub.winners|length }}</p>
                         {% if current_user.is_authenticated %}
                             {% if current_user.id == pub.labyrinth.user.id %}
                                 <p><strong>State:</strong> Owned</p>
@@ -34,9 +32,21 @@
                                 <p><strong>State:</strong> Uncompleted</p>
                             {% endif %}
                         {% endif %}
+                        <p><strong>Publication date:</strong> {{ pub.posted_at.strftime('%Y-%m-%d') }}</p>
                     </div>
                 </a>
             {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('auth.get_user_profile', id=user.id, page=page-1) }}">« Prev</a>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('auth.get_user_profile', id=user.id, page=page+1) }}">Next »</a>
+            {% endif %}
         </div>
     {% else %}
         <p>No publications found.</p>
