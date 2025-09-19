@@ -66,6 +66,6 @@ def get_user_profile(id):
     if not user:
         return "User not found", 404
     if user == current_user:
-        return render_template('my_profile.html')
+        return get_my_profile()
     publications = publicationService.get_user_publications(user.id)
     return render_template('user_profile.html', user=user, publications=publications)

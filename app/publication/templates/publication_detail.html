@@ -10,6 +10,8 @@
         </a>
     </h2>
     <p><strong>Description:</strong> {{ publication.labyrinth.description or "No description" }}</p>
+    <p><strong>Minimal movements:</strong> {{ publication.min_movements }}</p>
+    <p><strong>Winners:</strong> {{ publication.winners|length }}</p>
     {% if current_user.is_authenticated %}
         {% if current_user.id == publication.labyrinth.user.id %}
             <p><strong>State:</strong> Owned</p>
@@ -19,6 +21,7 @@
             <p><strong>State:</strong> Uncompleted</p>
         {% endif %}
     {% endif %}
+     <p><strong>Publication date:</strong> {{ publication.posted_at.strftime('%Y-%m-%d') }}</p>
     {% set rows = publication.labyrinth.matrix|length %}
     {% set cols = publication.labyrinth.matrix[0]|length %}
     {% if rows < 16 and cols < 29 %}
