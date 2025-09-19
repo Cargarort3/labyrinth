@@ -6,13 +6,13 @@ class PublicationService:
         self.publicationRepository = PublicationRepository()
 
     def get_all_publications(self):
-        return self.publicationRepository.get_all()
+        return self.publicationRepository.get_all()[::-1]
 
     def get_publication_by_id(self, id):
         return self.publicationRepository.get_by_id(id)
 
     def get_user_publications(self, user_id):
-        return self.publicationRepository.get_by_userid(user_id)
+        return self.publicationRepository.get_by_userid(user_id)[::-1]
 
     def create_publication(self, publication, labyrinth):
         return self.publicationRepository.create(publication, labyrinth)

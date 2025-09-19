@@ -46,7 +46,7 @@ class PublicationSeleniumTest(unittest.TestCase):
         self.driver.find_element(By.ID, "create").click()
         time.sleep(1)
 
-        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[-1].click()
+        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[0].click()
         time.sleep(1)
 
         self.driver.find_element(By.ID, "publish").click()
@@ -69,7 +69,7 @@ class PublicationSeleniumTest(unittest.TestCase):
 
         self.driver.find_element(By.LINK_TEXT, "Discover labyrinths").click()
         time.sleep(1)
-        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[-1].click()
+        self.driver.find_elements(By.CLASS_NAME, "labyrinth-card-link")[0].click()
         time.sleep(1)
 
         self.driver.find_element(By.ID, "print").click()

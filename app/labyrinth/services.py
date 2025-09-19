@@ -9,7 +9,7 @@ class LabyrinthService:
         return self.labyrinthRepository.get_by_id(id)
 
     def get_my_labyrinths(self, user_id):
-        return self.labyrinthRepository.get_by_userid(user_id)
+        return self.labyrinthRepository.get_by_userid(user_id)[::-1]
 
     def create_labyrinth(self, labyrinth):
         return self.labyrinthRepository.create(labyrinth)
