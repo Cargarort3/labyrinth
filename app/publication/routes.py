@@ -16,8 +16,18 @@ authService = AuthService()
 
 @publication.route('/', methods=['GET'])
 def get_all_publications():
-    publications = publicationService.get_all_publications()
-    return render_template('all_publications.html', publications=publications)
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    publications, total = publicationService.get_all_publications_paginated(page, per_page)
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'all_publications.html',
+        publications=publications,
+        page=page,
+        total_pages=total_pages
+    )
 
 
 @publication.route('/<int:id>', methods=['GET'])

@@ -77,8 +77,18 @@ def create_labyrinth():
 @labyrinth.route('/', methods=['GET'])
 @login_required
 def my_labyrinths():
-    labyrinths = labyrinthService.get_my_labyrinths(current_user.id)
-    return render_template('my_labyrinths.html', labyrinths=labyrinths)
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    labyrinths, total = labyrinthService.get_my_labyrinths_paginated(current_user.id, page, per_page)
+    total_pages = (total + per_page - 1) // per_page
+
+    return render_template(
+        'my_labyrinths.html',
+        labyrinths=labyrinths,
+        page=page,
+        total_pages=total_pages
+    )
 
 
 @labyrinth.route('/<int:id>', methods=['GET'])
