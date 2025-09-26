@@ -52,7 +52,7 @@ with app.app_context():
 
         pub = Publication(
             labyrinth=lab,
-            min_movements=8 + (i % 5)
+            min_movements=8
         )
 
         eligible_winners = [u for u in users if u != author]
