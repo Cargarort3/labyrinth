@@ -31,11 +31,11 @@ class TestLabyrinth():
     def test_solve_labyrinth_success(self, client):
         data = {
             "labyrinth": [
-                [0, 1, 0, 0, 0],
-                [0, 0, 0, 1, 0],
-                [1, 0, 1, 1, 0],
-                [1, 0, 1, 1, 0],
+                [0, 0, 1, 1, 1],
                 [1, 0, 0, 0, 0],
+                [0, 0, 1, 1, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 0, 0, 0],
             ],
             "start": [1, 1],
             "end": [5, 5]
@@ -45,7 +45,7 @@ class TestLabyrinth():
         assert response.status_code == 200
         result = response.get_json()
         assert len(result["path"]) == 9
-        assert result["path"][2] == [[2, 2], "🡇"]
+        assert result["path"][2] == [[2, 2], "🡆"]
         assert result["path"][-1] == [[5, 5], "🚩"]
 
         data["algorithm"] = "dfs"
@@ -53,7 +53,7 @@ class TestLabyrinth():
         assert response.status_code == 200
         result = response.get_json()
         assert len(result["path"]) == 11
-        assert result["path"][2] == [[2, 2], "🡆"]
+        assert result["path"][2] == [[2, 2], "🡇"]
         assert result["path"][-1] == [[5, 5], "🚩"]
 
         data["algorithm"] = "rw"
@@ -61,7 +61,7 @@ class TestLabyrinth():
         assert response.status_code == 200
         result = response.get_json()
         assert len(result["path"]) >= 9
-        assert result["path"][0] == [[1, 1], "🡇"]
+        assert result["path"][0] == [[1, 1], "🡆"]
         assert result["path"][-1] == [[5, 5], "🚩"]
         response = client.get('/register')
         assert response.status_code == 200
