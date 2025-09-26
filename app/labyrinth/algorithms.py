@@ -13,7 +13,7 @@ def matrix_to_graph(matrix):
                 node = (i, j)
                 graph[node] = []
 
-                for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                for di, dj in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
                     ni = i + di
                     nj = j + dj
                     if 0 < ni <= rows and 0 < nj <= columns and matrix[ni-1][nj-1] == 0:
